@@ -16,11 +16,11 @@ def normalising_constant(priors, likelihoods):
 
 def posterior(self_prior,
               self_likelihood,
-              other_priors,
-              other_likelihoods):
+              priors,
+              likelihoods):
 
     return (self_prior * self_likelihood) / normalising_constant(
-        [self_prior] + other_priors, [self_likelihood] + other_likelihoods
+        priors, likelihoods
     )
 
 
