@@ -1,2 +1,5 @@
 .ipynb_checkpoints/
 src/__pycache__/
+
+*_payoffs.txt
+*.DS_Store

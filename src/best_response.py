@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
     player_idx = int(sys.argv[1])
 
-    # Kim, Choi and Baek Paper
+    # Reproducing Kim, Choi and Baek Paper
     p0, pcc, pcd, pdc, pdd = sym.symbols("p_{0}, p_{CC}, p_{CD}, p_{DC}, p_{DD}")
 
     delta = sym.symbols("delta")
