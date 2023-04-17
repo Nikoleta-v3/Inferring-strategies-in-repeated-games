@@ -14,15 +14,11 @@ def normalising_constant(priors, likelihoods):
     return sum([p * l for p, l in zip(priors, likelihoods)])
 
 
-def posterior(self_prior,
-              self_likelihood,
-              priors,
-              likelihoods):
+def posterior(priors, likelihoods):
+    a = [x * y for x, y in zip(priors, likelihoods)]
+    a /= sum(a)
 
-    return (self_prior * self_likelihood) / normalising_constant(
-        priors, likelihoods
-    )
-
+    return a
 
 class MemoryOne:
     def __init__(self, states_action_dict, error=0):
