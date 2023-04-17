@@ -1,6 +1,7 @@
 # %%
 import itertools
 import bayesian
+import axelrod as axl
 
 from axelrod.action import Action
 
