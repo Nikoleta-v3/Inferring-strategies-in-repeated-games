@@ -81,11 +81,11 @@ def long_term_payoffs(
 if __name__ == "__main__":
 
     initial_sequences = itertools.product([C, D], repeat=seq_size)
-    pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
 
     for init_seq in initial_sequences:
         s = BayesianBestResponseStrategy(init_seq)
 
+        pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
         total_payoff = 0
         for i in pure_memory_one_strategies:
             opponent = axl.MemoryOneStrategy(i[1:], initial=action_map[i[0]])
