@@ -150,7 +150,7 @@ if __name__ == "__main__":
     labels = [f"d{i}" for i, _ in enumerate(pure_strategies)]
 
     labels[0] = "ALLD (D)"
-    labels[16] = "ALLD (D)"
+    labels[16] = "ALLD (C)"
 
     labels[15] = "ALLC (D)"
     labels[31] = "ALLC (C)"
