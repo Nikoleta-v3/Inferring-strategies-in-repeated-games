@@ -1,0 +1,204 @@
+\documentclass[11pt]{article}
+\usepackage{hyperref}
+\usepackage[margin=3cm, includefoot, footskip=30pt]{geometry}
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{graphics}
+\usepackage{makecell}
+\def\arraystretch{1.5}
+
+\renewcommand\theadalign{l}
+\renewcommand\theadgape{\Gape[4pt]}
+\renewcommand\cellgape{\Gape[4pt]}
+
+\title{\bf  \sffamily \Large Inferring strategies in repeated games: The French Defence\\}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+In this work we consider the discounted repeated prisoners dilemma (PD). The
+discount factor (\(\delta\)) is commonly interpreted as the constant continuation
+probability of having another round, or as the players' common discount rate on
+future payoff streams.
+
+We define the one-shot PD in the following form:
+
+\begin{equation}
+    \begin{pmatrix}
+            1 - c & -c \\
+            1 & 0
+    \end{pmatrix}
+\end{equation}
+
+where \(c\) is the cost of cooperation assumed to be \(0 < c < 1\).
+
+We restrict ourselves to memory-one strategies, a set of strategies that take
+into account the outcome of one previous round. Such strategies can be
+represented as a 5-tuple, \(p=(p_{0}, p_{CC}, p_{CD}, p_{DC}, p_{DD})\). The
+entry \(p_0\) denotes the probability to cooperate in the first round. The entry
+\(p_{ij}\) denotes the probability to cooperate in the next round. This
+probability depends on the player's action \(i\) and the co-player's action
+\(j\) in the previous round. The set of pure memory-one strategies, denoted
+by \(\Delta\), contains 32 elements from \(d_{0} = (0, 0, 0, 0, 0)\) to
+\(d_{31} = (1, 1, 1, 1, 1)\).
+
+Let's assume that player A plays \(\mathbf{d_{a}} = (p_{0}, p_{CC}, p_{CD},
+p_{DC}, p_{DD})\) and player B plays \(\mathbf{d_{b}} = (q_{0}, q_{CC}, q_{CD},
+q_{DC}, q_{DD})\), the repeated interaction between the players can be described
+as a Markovian process (with the transition matrix \(M\)), and we can explicitly
+obtain the stationary probability distribution,
+
+\begin{equation*}
+    \mathbf{v(\mathbf{d_{a}}, \mathbf{d_{b}}, \delta)} = (v_{CC}, v_{CD}, v_{DC}, v_{DD})
+\end{equation*}
+
+where \(u_{ij}\) mean the long-term average probability to observe player A
+and B choosing \(i\) and \(j\) respectively. We calculate the stationary probability
+distribution as follows,
+
+\begin{equation*}
+    \mathbf{v(\mathbf{d_{a}}, \mathbf{d_{b}}, \delta)} = (1 - \delta) \mathbf{v_{0}} \left(I^4 - \delta M \right), \text{ where }
+\end{equation*}
+
+\begin{equation*}
+    \mathbf{v_{0}} = \left(p_{0}q_{0}, p_{0}(1 - q_{0}), (1 - p_{0})q_{0}, (1 - p_{0})(1 - q_{0}) \right), \text{ and }
+\end{equation*}
+
+\begin{equation}
+    \displaystyle M = \left[\begin{matrix}p_{CC} q_{CC} & p_{CC} \left(1 - q_{CC}\right) & q_{CC} \left(1 - p_{CC}\right) & \left(1 - p_{CC}\right) \left(1 - q_{CC}\right)\\
+      p_{CD} q_{DC} & p_{CD} \left(1 - q_{DC}\right) & q_{DC} \left(1 - p_{CD}\right) & \left(1 - p_{CD}\right) \left(1 - q_{DC}\right)\\
+      p_{DC} q_{CD} & p_{DC} \left(1 - q_{CD}\right) & q_{CD} \left(1 - p_{DC}\right) & \left(1 - p_{DC}\right) \left(1 - q_{CD}\right)\\
+      p_{DD} q_{DD} & p_{DD} \left(1 - q_{DD}\right) & q_{DD} \left(1 - p_{DD}\right) & \left(1 - p_{DD}\right) \left(1 - q_{DD}\right)\end{matrix}\right].
+\end{equation}
+
+The average payoff of player A against player B can be calculated as
+
+\begin{equation*}
+    \pi(\mathbf{d_{a}}, \mathbf{d_{b}}, \delta) = \mathbf{v(\mathbf{d_{a}}, \mathbf{d_{b}}, \delta)} \cdot (1 - c, -c, 1, 0).
+\end{equation*}
+
+In table~\ref{table:best_responses} we list the best response to each strategy
+in \(\Delta\). To calculate the best response of a given strategy,
+\(\mathbf{d_{b}}\), we calculate the long-term average payoff of
+\(\mathbf{d_{a}}\) against it for every \(a \in [0, \dots, 31]\) and choose
+\(a\) such that the payoff is maximized.
+
+From table~\ref{table:best_responses} we can observe that each strategy has
+multiple best responses. In some cases the best responses will depend on the
+relationship between \(c\) and \(\delta\). For example in the case of
+\(\mathbf{d_{2}}\), the best responses depend on whether \(c\) is
+smaller or greater that \(\delta\). We do not specify what happens when \(c\)
+and \(\delta\) are equal, because then the list of best responses is the union
+of \(c < \delta\) and \(c > \delta\). In same cases, however, we specify the
+best responses in case of equality. For example
+for \(\mathbf{d_{26}}\). That is because now the best responses are the best
+responses for \(c < \delta\) and \(c > \delta\), and the strategies specified
+for \(c = \delta\).
+
+\begin{table}
+\resizebox{\columnwidth}{.5\textheight}{%
+\begin{tabular}{lllll}
+    \toprule
+    {} & \thead{opponent \\ strategy} & best response & \thead{best response \\ payoff} & Misc. \\
+    \midrule
+     &              $  d_{0} $ & $d_0^{\dagger}$, $d_4$, $d_8$, $d_{12}$ & $1 - \delta$ & ALLD (D) \\
+     &              $  d_{1} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{\delta}{(\delta + 1)}$ & \\
+     &              $  d_{2} $ & $\left\{\begin{array}{lr}
+        d_{0}, d_{2}^{\dagger}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}, & c > \delta \\
+        d_{18}, d_{19}, d_{26}, d_{27}, & c < \delta \\ \end{array}\right\}$
+        & $\left\{\begin{array}{c}
+        - \frac{c - \delta}{\delta + 1} \\
+        0 \\ \end{array}\right\}$ & \\
+     &              $  d_{3} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{\delta}{\delta + 1}$ & \\
+     &              $  d_{4} $ & $d_{0}, d_{2}, d_{4}^{\dagger}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}$ & 0 & \\
+     &              $  d_{5} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\delta$ & \\
+     &              $  d_{6} $ & $\left\{\begin{array}{lr}
+        d_{16}, d_{17}, d_{24}, d_{25}, & c > \frac{\delta}{1 - \delta}\\
+        d_{0}, d_{2}, d_{4}, d_{6}^{\dagger}, d_{8}, d_{10}, d_{12}, d_{14}, & c < \frac{\delta}{1 - \delta}\\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+            c \left(\delta - 1\right) + \delta \\
+            0 \\ \end{array}\right\}$ & \\
+     &              $  d_{7} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\delta$ & \\
+     &              $  d_{8} $ & $d_{0}, d_{2}, d_{4}, d_{6}, d_{8}^{\dagger}, d_{10}, d_{12}, d_{14}$ & 0 &   GT (D) \\
+     &              $  d_{9} $ &  $\left\{\begin{array}{lr}
+        d_{0}, d_{4}, d_{8}, d_{12}, & c > \frac{\delta}{\delta + 1} \\
+        d_{9}, d_{11}, d_{13}, d_{15} & c < \frac{\delta}{\delta + 1} \\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        \frac{\delta}{\delta + 1} \\
+        - \delta \left(c - 1\right) \\ \end{array}\right\}$ & WSLS (D) \\
+     &              $ d_{10} $ & $\left\{\begin{array}{lr}
+        d_{0}, d_{2}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}, & c > \delta \\
+        d_{28}, d_{29}, d_{30}, d_{31}, & c < \delta \\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        - c + \delta \\
+        0 \\ \end{array}\right\}$ &  TFT (D) \\
+     &              $ d_{11} $ &  $\left\{\begin{array}{lr}
+        d_{0}, d_{4}, d_{8}, d_{12}, & c > \frac{\delta}{\delta + 1} \\
+        d_{9}, d_{11}, d_{13}, d_{15} & c < \frac{\delta}{\delta + 1} \\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        \frac{\delta}{\delta + 1} \\
+        - \delta \left(c - 1\right) \\ \end{array}\right\}$ & \\
+     &              $ d_{12} $ & $d_{0}, d_{2}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}^{\dagger}, d_{14}$ & 0 & \\
+     &              $ d_{13} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\delta$ & \\
+     &              $ d_{14} $ & $\left\{\begin{array}{lr}
+        d_{16}, d_{17}, d_{24}, d_{25}, & c > \frac{\delta}{1 - \delta}\\
+        d_{0}, d_{2}, d_{4}, d_{6}^{\dagger}, d_{8}, d_{10}, d_{12}, d_{14}, & c < \frac{\delta}{1 - \delta}\\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+            c \left(\delta - 1\right) + \delta \\
+            0 \\ \end{array}\right\}$  & \\
+     &              $ d_{15} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\delta$ & ALLC (D) \\
+     &              $ d_{16} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & 1 - $\delta$ & ALLD (C) \\
+     &              $ d_{17} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{1}{1 + \delta}$ & \\
+     &              $ d_{18} $ & $\left\{\begin{array}{lr}
+        d_{0}, d_{4}, d_{8}, d_{12}, & c > \delta \\
+        d_{2}, d_{3}, d_{10}, d_{11}, & c < \delta \\
+        d_{1}, d_{9}, & c = \delta\\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        1 - \delta \\
+        \frac{1 - c\delta}{1 + \delta} \\
+        \frac{-(c \delta^2 - 1 )}{(\delta^2 + \delta + 1)} \\ \end{array}\right\}$ & \\
+     &              $ d_{19} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{1}{1 + \delta}$ & \\
+     &              $ d_{20} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
+     &              $ d_{21} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
+     &              $ d_{22} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
+     &              $ d_{23} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
+     &              $ d_{24} $ & $\left\{\begin{array}{lr}
+        d_{0}, d_{4}, d_{8}, d_{12}, & c > \delta \\
+        d_{24}, d_{25}, d_{26}, d_{27},  d_{28}, d_{29}, d_{30}, d_{31}& c < \delta \\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        \frac{1}{\delta + 1} \\
+        1 - c \\ \end{array}\right\}$ & GT (C) \\
+     &              $ d_{25} $ & $\left\{\begin{array}{lr}
+        d_{0}, d_{4}, d_{8}, d_{12}, & c > \frac{\delta}{1 + \delta} \\
+        d_{24}, d_{25}, d_{26}, d_{27}, d_{28}, d_{29}, d_{30}, d_{31}& c < \frac{\delta}{1 + \delta} \\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        1 - \delta \\
+        1 - c \\ \end{array}\right\}$ & WSLS (C) \\
+     &              $ d_{26} $ & $\left\{\begin{array}{lr}
+        d_{0}, d_{4}, d_{8}, d_{12}, & c > \delta \\
+        d_{24}, d_{25}, d_{26}, d_{27}, d_{28}, d_{29}, d_{30}, d_{31}, & c < \delta \\
+        d_{1}, d_{9}, d_{17}, d_{22}, d_{23}, & c = \delta\\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        1 - \delta \\
+        1 - c \\
+        \frac{-(c \delta^2 - 1 )}{(\delta^2 + \delta + 1)} \\ \end{array}\right\}$  & TFT (C) \\
+     &              $ d_{27} $ & $\left\{\begin{array}{lr}
+        d_{0}, d_{4}, d_{8}, d_{12}, & c > \frac{\delta}{1 + \delta} \\
+        d_{24}, d_{25}, d_{26}, d_{27}, d_{28}, d_{29}, d_{30}, d_{31}& c < \frac{\delta}{1 + \delta} \\ \end{array}\right\}$ 
+        & $\left\{\begin{array}{c} 
+        1 - \delta \\
+        1 - c \\ \end{array}\right\}$ & \\
+     &              $ d_{28} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
+     &              $ d_{29} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
+     &              $ d_{30} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
+     &              $ d_{31} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & ALLC (C) \\
+    \bottomrule
+    \end{tabular}}
+    \caption{\textbf{Best responses among memory-one strategies.}}\label{table:best_responses}
+\end{table}
+
+\end{document}
