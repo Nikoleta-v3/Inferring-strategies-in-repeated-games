@@ -1,7 +1,6 @@
 .ipynb_checkpoints/
-src/__pycache__/
+*/__pycache__/
 
-*_payoffs.txt
 *.DS_Store
 
 *.aux
@@ -12,3 +11,5 @@ src/__pycache__/
 *.synctex.gz
 
 mathematica
+
+outputsBayek/
