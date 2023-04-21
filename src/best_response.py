@@ -133,11 +133,13 @@ def stationary_no_discount(player, coplayer, epsilon):
 
     return v_vector
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     player_idx = int(sys.argv[1])
 
-    p0, pcc, pcd, pdc, pdd = sym.symbols("p_{0}, p_{CC}, p_{CD}, p_{DC}, p_{DD}")
+    p0, pcc, pcd, pdc, pdd = sym.symbols(
+        "p_{0}, p_{CC}, p_{CD}, p_{DC}, p_{DD}"
+    )
 
     delta = sym.symbols("delta")
 
@@ -161,18 +163,17 @@ if __name__ == "__main__":
     labels[9] = "WSLS (D)"
     labels[25] = "WSLS (C)"
 
-    labels[10] = 'TFT (D)'
-    labels[26] = 'TFT (C)'
+    labels[10] = "TFT (D)"
+    labels[26] = "TFT (C)"
     player = pure_strategies[player_idx]
 
     payoffs = []
 
     for coplayer in tqdm.tqdm(pure_strategies):
-        
         ss = stationary(coplayer, player, epsilon, delta)
-        
+
         payoffs.append(sum(ss @ sym.Matrix([b - c, -c, b, 0])).simplify())
 
-    with open(f"outputs/{labels[player_idx]}_payoffs.txt", 'w') as f:
-        writer = csv.writer(f, delimiter='\t')
+    with open(f"outputs/{labels[player_idx]}_payoffs.txt", "w") as f:
+        writer = csv.writer(f, delimiter="\t")
         writer.writerows(zip(labels, payoffs))
