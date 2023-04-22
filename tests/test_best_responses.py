@@ -22,6 +22,19 @@ files[26] = "TFT (C)"
 
 
 def test_best_response():
+    """A function that tests the `best_response`. For the payoffs of the
+    pure memory-one strategies against a given memory-one strategy we have explicit
+    expressions (folder `outputs`).
+
+    This function evaluate the payoffs for every possible player for different values
+    of c and delta.
+
+    For the same player, c and delta, the list of best responses is returned
+    with the function `best_response`.
+
+    The tests checks that the set of strategies with the highest payoffs against
+    the player is the same set as the one returned by the function.
+    """
     c, delta, epsilon = sym.symbols("c, delta, epsilon")
 
     cvals = dvals = np.linspace(0 + 10 ** (-2), 1 - 10 ** (-2), 5).round(3)
