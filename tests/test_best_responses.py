@@ -27,28 +27,27 @@ def test_best_response():
     cvals = dvals = np.linspace(0 + 10 ** (-2), 1 - 10 ** (-2), 5).round(3)
 
     for i, filename in enumerate(files):
-        if i not in [18, 26, 27]:
-            print(i)
-            # get expressions from files:
-            with open(f"outputs/{filename}_payoffs.txt") as f:
-                file = f.readlines()
+        print(i)
+        # get expressions from files:
+        with open(f"outputs/{filename}_payoffs.txt") as f:
+            file = f.readlines()
 
-            payoffs = [parse_expr(f.split("\t")[1].replace("\n", "")) for f in file]
-            eto0 = [p.subs({epsilon: 0}).factor() for p in payoffs]
+        payoffs = [parse_expr(f.split("\t")[1].replace("\n", "")) for f in file]
+        eto0 = [p.subs({epsilon: 0}).factor() for p in payoffs]
 
-            # for a given value of c and delta check that the expression and the
-            # functions give the same list of best responses
+        # for a given value of c and delta check that the expression and the
+        # functions give the same list of best responses
 
-            for c_val in cvals:
-                for d_val in dvals:
-                    numerical_eval_payoffs = [
-                        float(p.subs({c: c_val, delta: d_val})) for p in eto0
-                    ]
+        for c_val in cvals:
+            for d_val in dvals:
+                numerical_eval_payoffs = [
+                    round(float(p.subs({c: c_val, delta: d_val})), 10) for p in eto0
+                ]
 
-                    idx_br = np.argwhere(
-                        numerical_eval_payoffs == np.amax(numerical_eval_payoffs)
-                    )
+                idx_br = np.argwhere(
+                    numerical_eval_payoffs == np.amax(numerical_eval_payoffs)
+                )
 
-                    assert set(idx_br.flatten()) == set(br.best_responses(
-                        i, c_val, d_val
-                    ))
+                assert set(idx_br.flatten()) == set(br.best_responses(
+                    i, c_val, d_val
+                ))
