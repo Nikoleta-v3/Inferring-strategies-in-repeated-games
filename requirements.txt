@@ -1,1 +1,2 @@
 axelrod==4.12.0
+pytest==7.3.1
