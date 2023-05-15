@@ -13,3 +13,6 @@
 mathematica
 
 outputsBayek/
+
+*.err
+*.out
