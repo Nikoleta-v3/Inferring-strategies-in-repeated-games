@@ -1,3 +1,5 @@
+import numpy as np
+
 def init_prior_uniform(n):
     """
     Returns 1 / n where n is the number of possibles strategies.
@@ -15,7 +17,7 @@ def normalising_constant(priors, likelihoods):
 
 
 def posterior(priors, likelihoods):
-    a = [x * y for x, y in zip(priors, likelihoods)]
+    a = np.array([x * y for x, y in zip(priors, likelihoods)])
     a /= sum(a)
 
     return a
