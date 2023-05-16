@@ -32,10 +32,12 @@ class BayesianBestResponseStrategy:
         # [TODO] implement YM
 # %%
 def posterior_distribution(history):
+    # ToDo: Debug
+
     """Compute the posterior distribution of the opponent's strategy."""
     num_possible_s = 32
-    last_turn_outcomes = ["p0"] + list(itertools.product([C, D], repeat=2))
-    pure_transitions = list(itertools.product([C, D], repeat=5))
+    last_turn_outcomes = ["p0"] + list(itertools.product([1, 0], repeat=2))
+    pure_transitions = list(itertools.product([1, 0], repeat=5))
     pure_strategies = {
         f"M{i}": {k: v for k, v in zip(last_turn_outcomes, transitions)}
         for i, transitions in enumerate(pure_transitions)
@@ -62,9 +64,8 @@ def posterior_distribution(history):
 
     # The rest
     for turn, turn_action in enumerate(coplayers_actions[1:]):
-
         likelihoods = [
-            strategy.likelihood(turn_action, tuple([action_map[a] for a in history[turn]]))
+            strategy.likelihood(turn_action, history[turn])
             for strategy in strategies_to_fit
         ]
 
@@ -73,14 +74,16 @@ def posterior_distribution(history):
         priors = posteriors
 
     return priors
-
 # %%
 
 def long_term_payoffs(
-    strategy, opponent, history, opening_payoffs, delta, epsilon
+    opening_payoffs, exp_p, delta
 ):
     """Compute the long term payoffs of the strategy against the opponent."""
-    # [TODO] implement NG
+    payoffs = 0
+    for turn, turn_payoff in enumerate(opening_payoffs):
+        payoffs += turn_payoff[0] * delta ** turn
+    return payoffs + exp_p * delta ** len(opening_payoffs)
 
 # %%
 initial_sequences = itertools.product([C, D], repeat=seq_size)
@@ -89,6 +92,8 @@ list(initial_sequences)
 # %%
 
 if __name__ == "__main__":
+
+    # define game with benefit and cost
 
     initial_sequences = itertools.product([C, D], repeat=seq_size)
 
@@ -107,7 +112,7 @@ if __name__ == "__main__":
             match = axl.Match(players=(s, opponent), turns=len(init_seq))
             _ = match.play()
             history = match.result
-            opening_payoffs = match.final_score_per_turn()
+            opening_payoffs = match.scores()
 
             # inferring co-player and best response
             bs, exp_p = infer_best_response_and_expected_payoffs(history)
@@ -179,7 +184,7 @@ def infer_best_response_and_expected_payoffs(history):
 
     return bs, exp_p
 
-history = [(1, 0), (1, 0), (1, 0)]
+history = [(0, 1), (1, 0), (0, 1), (1, 0), (1, 1), (1, 1)]
 
 bs, exp_p = infer_best_response_and_expected_payoffs(history)
 # %%
