@@ -105,22 +105,22 @@ for \(c = \delta\).
     \toprule
     {} & \thead{opponent \\ strategy} & best response & \thead{best response \\ payoff} & Misc. \\
     \midrule
-     &              $  d_{0} $ & $d_0^{\dagger}$, $d_4$, $d_8$, $d_{12}$ & $1 - \delta$ & ALLD (D) \\
-     &              $  d_{1} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{\delta}{(\delta + 1)}$ & \\
+     &              $  d_{0} $ & $d_{0}^{\dagger}, d_{2}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}$ & 0 & ALLD (D) \\
+     &              $  d_{1} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{\delta}{\delta + 1}$ & \\
      &              $  d_{2} $ & $\left\{\begin{array}{lr}
         d_{0}, d_{2}^{\dagger}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}, & c > \delta \\
         d_{18}, d_{19}, d_{26}, d_{27}, & c < \delta \\
         d_{1}, d_{3}, d_{9}, d_{11}, d_{16}, d_{17}, d_{24}, d_{25}, & c = \delta \end{array}\right\}$
         & $\left\{\begin{array}{c}
-        - \frac{c - \delta}{\delta + 1} \\
         0 \\
-        \frac{\delta \left(- c + \delta\right)}{\delta^{2} + \delta + 1} \\ \end{array}\right\}$ & \\
+        - \frac{c - \delta}{\delta + 1} \\
+        0 \\ \end{array}\right\}$ & \\
      &              $  d_{3} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{\delta}{\delta + 1}$ & \\
      &              $  d_{4} $ & $d_{0}, d_{2}, d_{4}^{\dagger}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}$ & 0 & \\
      &              $  d_{5} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\delta$ & \\
      &              $  d_{6} $ & $\left\{\begin{array}{lr}
-      d_{0}, d_{2}, d_{4}, d_{6}^{\dagger}, d_{8}, d_{10}, d_{12}, d_{14}, & c > \frac{\delta}{1 - \delta}\\
-         d_{16}, d_{17}, d_{24}, d_{25}, & c < \frac{\delta}{1 - \delta}\\ \end{array}\right\}$ 
+      d_{0}, d_{2}, d_{4}, d_{6}^{\dagger}, d_{8}, d_{10}, d_{12}, d_{14}, & c < \frac{- \delta}{1 - \delta}\\
+         d_{16}, d_{17}, d_{24}, d_{25}, & c > \frac{- \delta}{1 - \delta}\\ \end{array}\right\}$ 
         & $\left\{\begin{array}{c} 
              0 \\
              c \left(\delta - 1\right) + \delta \\ \end{array}\right\}$ & \\
@@ -131,28 +131,29 @@ for \(c = \delta\).
         d_{9}^{\dagger}, d_{11}, d_{13}, d_{15} & c < \frac{\delta}{\delta + 1} \\ \end{array}\right\}$ 
         & $\left\{\begin{array}{c} 
         \frac{\delta}{\delta + 1} \\
-        - \delta \left(c - 1\right) \\ \end{array}\right\}$ & WSLS (D) \\
+        \delta \left(1 - c\right) \\ \end{array}\right\}$ & WSLS (D) \\
      &              $ d_{10} $ & $\left\{\begin{array}{lr}
         d_{0}, d_{2}, d_{4}, d_{6}, d_{8}, d_{10}^{\dagger}, d_{12}, d_{14}, & c > \delta \\
         d_{28}, d_{29}, d_{30}, d_{31}, & c < \delta \\ 
        \Delta, & c = \delta \end{array}\right\}$ 
         & $\left\{\begin{array}{c} 
-        - c + \delta \\
+         0 \\
+        \delta - c \\
         0 \\ \end{array}\right\}$ &  TFT (D) \\
      &              $ d_{11} $ &  $\left\{\begin{array}{lr}
         d_{0}, d_{4}, d_{8}, d_{12}, & c > \frac{\delta}{\delta + 1} \\
         d_{9}, d_{11}^{\dagger}, d_{13}, d_{15} & c < \frac{\delta}{\delta + 1} \\ \end{array}\right\}$ 
         & $\left\{\begin{array}{c} 
         \frac{\delta}{\delta + 1} \\
-        - \delta \left(c - 1\right) \\ \end{array}\right\}$ & \\
+        \delta \left(1 - c\right) \\ \end{array}\right\}$ & \\
      &              $ d_{12} $ & $d_{0}, d_{2}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}^{\dagger}, d_{14}$ & 0 & \\
      &              $ d_{13} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\delta$ & \\
      &              $ d_{14} $ & $\left\{\begin{array}{lr}
-      d_{0}, d_{2}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}^{\dagger}, & c > \frac{\delta}{1 - \delta}\\
-      d_{16}, d_{17}, d_{24}, d_{25},  & c < \frac{\delta}{1 - \delta}\\\end{array}\right\}$ 
-        & $\left\{\begin{array}{c} 
-            c \left(\delta - 1\right) + \delta \\
-            0 \\ \end{array}\right\}$  & \\
+      d_{0}, d_{2}, d_{4}, d_{6}, d_{8}, d_{10}, d_{12}, d_{14}^{\dagger}, & c < \frac{- \delta}{1 - \delta}\\
+      d_{16}, d_{17}, d_{24}, d_{25},  & c > \frac{- \delta}{1 - \delta}\\\end{array}\right\}$ 
+        & $\left\{\begin{array}{c}
+            0 \\ 
+            c \left(\delta - 1\right) + \delta \\ \end{array}\right\}$  & \\
      &              $ d_{15} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\delta$ & ALLC (D) \\
      &              $ d_{16} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & 1 - $\delta$ & ALLD (C) \\
      &              $ d_{17} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{1}{1 + \delta}$ & \\
@@ -163,7 +164,7 @@ for \(c = \delta\).
         & $\left\{\begin{array}{c} 
         1 - \delta \\
         \frac{1 - c\delta}{1 + \delta} \\
-        \frac{-(c \delta^2 - 1 )}{(\delta^2 + \delta + 1)} \\ \end{array}\right\}$ & \\
+        1 - \delta \\ \end{array}\right\}$ & \\
      &              $ d_{19} $ & $d_0$, $d_4$, $d_8$, $d_{12}$ & $\frac{1}{1 + \delta}$ & \\
      &              $ d_{20} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
      &              $ d_{21} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
@@ -174,29 +175,28 @@ for \(c = \delta\).
         d_{24}^{\dagger}, d_{25}, d_{26}, d_{27},  d_{28}, d_{29}, d_{30}, d_{31}& c < \delta  \\
         d_{16}, d_{20}, & c = \delta\\ \end{array}\right\}$ 
         & $\left\{\begin{array}{c} 
-        \frac{1}{\delta + 1} \\
+        1 - \delta \\
         1 - c \\
-        \left(\delta - 1\right) \left(c - \delta - 1\right) \\ \end{array}\right\}$ & GT (C) \\
+        1 - \delta \\ \end{array}\right\}$ & GT (C) \\
      &              $ d_{25} $ & $\left\{\begin{array}{lr}
         d_{0}, d_{4}, d_{8}, d_{12}, & c > \frac{\delta}{1 + \delta} \\
         d_{24}, d_{25}^{\dagger}, d_{26}, d_{27}, d_{28}, d_{29}, d_{30}, d_{31}& c < \frac{\delta}{1 + \delta} \\ \end{array}\right\}$ 
         & $\left\{\begin{array}{c} 
-        1 - \delta \\
+        \frac{1}{1 + \delta} \\
         1 - c \\ \end{array}\right\}$ & WSLS (C) \\
      &              $ d_{26} $ & $\left\{\begin{array}{lr}
         d_{0}, d_{4}, d_{8}, d_{12}, & c > \delta \\
         d_{24}, d_{25}, d_{26}^{\dagger}, d_{27}, d_{28}, d_{29}, d_{30}, d_{31}, & c < \delta \\
-        
         \Delta, & c = \delta\\ \end{array}\right\}$ 
         & $\left\{\begin{array}{c} 
         1 - \delta \\
         1 - c \\
-        \frac{-(c \delta^2 - 1 )}{(\delta^2 + \delta + 1)} \\ \end{array}\right\}$  & TFT (C) \\
+        1 - \delta \\ \end{array}\right\}$  & TFT (C) \\
      &              $ d_{27} $ & $\left\{\begin{array}{lr}
         d_{0}, d_{4}, d_{8}, d_{12}, & c > \frac{\delta}{1 + \delta} \\
         d_{24}, d_{25}, d_{26}, d_{27}^{\dagger}, d_{28}, d_{29}, d_{30}, d_{31}& c < \frac{\delta}{1 + \delta} \\ \end{array}\right\}$ 
         & $\left\{\begin{array}{c}
-        1 - \delta \\
+        \frac{1}{1 + \delta} \\
         1 - c \\ \end{array}\right\}$ & \\
      &              $ d_{28} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\
      &              $ d_{29} $ & $d_{0}, d_{1}, d_{4}, d_{5}, d_{8}, d_{9}, d_{12}, d_{13}$ & 1 & \\

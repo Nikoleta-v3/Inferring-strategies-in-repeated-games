@@ -14,7 +14,7 @@ d12	(-c*epsilon - 2*delta*epsilon**2 + 3*delta*epsilon - delta - epsilon + 1)/(2
 d13	(-2*c*delta*epsilon**2 + c*delta*epsilon + c*epsilon - 2*delta*epsilon**3 + 5*delta*epsilon**2 - 4*delta*epsilon + delta + epsilon - 1)/(2*delta*epsilon**2 - 3*delta*epsilon + delta - 1)
 d14	(-2*c*delta*epsilon**2 + 3*c*delta*epsilon - c*delta - c*epsilon - 2*delta*epsilon**3 + 3*delta*epsilon**2 - delta*epsilon - epsilon + 1)/(2*delta*epsilon**2 - delta*epsilon + 1)
 ALLC (D)	2*c*delta*epsilon - c*delta - c*epsilon - epsilon + 1
-ALLD (D)	-2*c*delta*epsilon + c*delta + c*epsilon - c - epsilon + 1
+ALLD (C)	-2*c*delta*epsilon + c*delta + c*epsilon - c - epsilon + 1
 d17	(-2*c*delta*epsilon**2 + 3*c*delta*epsilon - c*delta - c*epsilon + c - 2*delta*epsilon**3 + 3*delta*epsilon**2 - delta*epsilon + epsilon - 1)/(2*delta*epsilon**2 - delta*epsilon - 1)
 d18	(-2*c*delta*epsilon**2 + c*delta*epsilon + c*epsilon - c - 2*delta*epsilon**3 + 5*delta*epsilon**2 - 4*delta*epsilon + delta - epsilon + 1)/(2*delta*epsilon**2 - 3*delta*epsilon + delta + 1)
 d19	(-c*epsilon + c - 2*delta*epsilon**2 + 3*delta*epsilon - delta + epsilon - 1)/(2*delta*epsilon - delta - 1)
