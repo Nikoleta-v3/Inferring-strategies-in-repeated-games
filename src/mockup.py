@@ -1,11 +1,13 @@
 # %%
 import itertools
-import bayesian
-import stationary
+
 import axelrod as axl
 import numpy as np
 #%%
 from axelrod.action import Action
+
+import bayesian
+import stationary
 
 C, D = Action.C, Action.D
 
