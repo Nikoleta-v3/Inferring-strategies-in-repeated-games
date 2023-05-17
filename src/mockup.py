@@ -169,22 +169,3 @@ if __name__ == "__main__":
             total_payoff += lt_payoffs[0]
 
         print(f"{init_seq} {total_payoff}")
-
-# %%
-init_seq = [C,D,C]
-init_seq_str = "".join([a.name for a in init_seq])
-axl.Cycler(init_seq_str)
-
-
-# %%
-pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
-i = list(pure_memory_one_strategies)[10]
-#for i in pure_memory_one_strategies:
-opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]]) # %%
-opponent
-
-# %%
-history = [(1, 1), (1, 1), (0, 1), (0, 1), (1, 1), (0, 1)]
-
-bs, exp_p = infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon)
-# %%
