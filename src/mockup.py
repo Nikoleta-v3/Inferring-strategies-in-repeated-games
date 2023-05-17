@@ -1,8 +1,9 @@
 # %%
 import itertools
 import bayesian
+import stationary
 import axelrod as axl
-
+import numpy as np
 #%%
 from axelrod.action import Action
 
@@ -21,15 +22,33 @@ epsilon = PARAMETERS["epsilon"]
 seq_size = PARAMETERS["seq_size"]
 action_map = {1: C, 0: D}
 
+
+def calculate_payoff_matrix():
+
+    payoff_matrix = np.zeros((32, 32))
+    b, c = PARAMETERS["benefit"], PARAMETERS["cost"]
+    pure_memory_one_strategies = list(itertools.product([0, 1], repeat=5))
+
+    for i, player in enumerate(pure_memory_one_strategies):
+        for j, coplayer in enumerate(pure_memory_one_strategies):
+            ss = stationary.stationary(player, coplayer, PARAMETERS['epsilon'], PARAMETERS['delta'])
+            payoff_matrix[i, j] = sum(ss @ np.array([b - c, -c, b, 0]))
+
+    return payoff_matrix
+
 # %%
+def infer_best_response_and_expected_payoffs(history):
 
-class BayesianBestResponseStrategy:
-    def __init__(self, initial_sequence):
-        self.initial_sequence = initial_sequence
+    posterior = posterior_distribution(history)
+    print(np.argmax(posterior))
+    payoff_matrix = calculate_payoff_matrix()
 
-    def best_response_and_expected_payoffs(self, history):
-        """Compute the best response based on the history."""
-        # [TODO] implement YM
+    expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
+
+    bs = np.argmax(expected_payoffs)
+    exp_p = np.max(expected_payoffs)
+
+    return bs, exp_p
 # %%
 def posterior_distribution(history):
     """Compute the posterior distribution of the opponent's strategy."""
@@ -136,52 +155,7 @@ opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]]) # %%
 opponent
 
 # %%
-
-# %%
-
-PARAMETERS = {
-    "epsilon": 0.001,
-    "delta": 0.99,
-    "seq_size": 2,
-    "benefit": 1,
-    "cost": 0.2
-}
-
-from importlib.machinery import SourceFileLoader
-
-stationary = SourceFileLoader("stationary", "stationary.py").load_module()
-
-from stationary import stationary
-
-def calculate_payoff_matrix():
-
-    payoff_matrix = np.zeros((32, 32))
-    b, c = PARAMETERS["benefit"], PARAMETERS["cost"]
-    pure_memory_one_strategies = list(itertools.product([0, 1], repeat=5))
-
-    for i, player in enumerate(pure_memory_one_strategies):
-        for j, coplayer in enumerate(pure_memory_one_strategies):
-            ss = stationary(player, coplayer, PARAMETERS['epsilon'], PARAMETERS['delta'])
-            payoff_matrix[i, j] = sum(ss @ np.array([b - c, -c, b, 0]))
-
-    return payoff_matrix
-
-# %%
-import numpy as np
-def infer_best_response_and_expected_payoffs(history):
-
-    posterior = posterior_distribution(history)
-    print(np.argmax(posterior))
-    payoff_matrix = calculate_payoff_matrix()
-
-    expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
-
-    bs = np.argmax(expected_payoffs)
-    exp_p = np.max(expected_payoffs)
-
-    return bs, exp_p
-
-history = [(1, 1), (1, 1), (0, 1), (0, 0), (1, 0), (0, 1)]
+history = [(1, 1), (1, 1), (0, 1), (0, 1), (1, 1), (0, 1)]
 
 bs, exp_p = infer_best_response_and_expected_payoffs(history)
 # %%
