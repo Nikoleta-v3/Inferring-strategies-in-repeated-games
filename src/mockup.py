@@ -26,22 +26,50 @@ action_map = {1: C, 0: D}
 
 
 def calculate_payoff_matrix():
+    """Calculates the payoffs $\pi(i, j)$ for i and j in Delta.
+
+    Returns
+    -------
+    np.array
+        A 32x32 matrix where each entry i, j is the long term payoff i receives against j.
+    """
 
     payoff_matrix = np.zeros((32, 32))
+
+    # The benefit and cost values are not input arguments of the function
     b, c = PARAMETERS["benefit"], PARAMETERS["cost"]
+
+    # For now we only consider pure memory - one strategies
     pure_memory_one_strategies = list(itertools.product([0, 1], repeat=5))
 
     for i, player in enumerate(pure_memory_one_strategies):
-        for j, coplayer in enumerate(pure_memory_one_strategies):
-            ss = stationary.stationary(player, coplayer, PARAMETERS['epsilon'], PARAMETERS['delta'])
+        for j, co_player in enumerate(pure_memory_one_strategies):
+            ss = stationary.stationary(player, co_player, PARAMETERS['epsilon'], PARAMETERS['delta'])
             payoff_matrix[i, j] = sum(ss @ np.array([b - c, -c, b, 0]))
 
     return payoff_matrix
 
 # %%
 def infer_best_response_and_expected_payoffs(history):
+    """Based on a given initial sequences (history) we try to infer the strategy
+    of the co-player.
+    
+    We calculate the posterior distribution given that co-player's
+    strategy is in Delta. Namely, the posterior distribution: $p(i)$, where $i$
+    is the index of the strategy $[1, 32]$.
+
+    We then calculate the long term payoffs for the player $\pi(i, j)$
+    of strategy $i$ against strategy $j$
+
+    If the focal player takes strategy $1$, for instance, the expected long-term 
+    payoff $P(1) = $\sum_i \pi(1, i) p(i)$.
+
+    In general, $P(j) = \sum_i \pi(j, i) p(i)$. We want to find the strategy $j$
+    that maximizes $P(j)$. Namely, $j = \argmax P(j)$.
+    """
 
     posterior = posterior_distribution(history)
+    # For testing purpose
     print(np.argmax(posterior))
     payoff_matrix = calculate_payoff_matrix()
 
