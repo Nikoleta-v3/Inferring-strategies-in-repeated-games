@@ -1,6 +1,6 @@
 # procedure
 
-Based on a given inital sequences, we calculate the posterior distribution.
+Based on a given initial sequences, we calculate the posterior distribution.
 
 - The posterior distribution: $p(i)$, where $i$ is the index of the strategy $[1,32]$
 - $\pi(i, j)$: the long-term payoff of strategy $i$ against strategy $j$

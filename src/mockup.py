@@ -1,11 +1,13 @@
 # %%
 import itertools
-import bayesian
-import stationary
+
 import axelrod as axl
 import numpy as np
 #%%
 from axelrod.action import Action
+
+import bayesian
+import stationary
 
 C, D = Action.C, Action.D
 
@@ -20,28 +22,55 @@ PARAMETERS = {
 delta = PARAMETERS["delta"]
 epsilon = PARAMETERS["epsilon"]
 seq_size = PARAMETERS["seq_size"]
+benefit = PARAMETERS["benefit"]
+cost = PARAMETERS["cost"]
 action_map = {1: C, 0: D}
 
 
-def calculate_payoff_matrix():
+def calculate_payoff_matrix(benefit, cost, delta, epsilon):
+    """Calculates the payoffs $\pi(i, j)$ for i and j in Delta.
+
+    Returns
+    -------
+    np.array
+        A 32x32 matrix where each entry i, j is the long term payoff i receives against j.
+    """
 
     payoff_matrix = np.zeros((32, 32))
-    b, c = PARAMETERS["benefit"], PARAMETERS["cost"]
+
+    # For now we only consider pure memory - one strategies
     pure_memory_one_strategies = list(itertools.product([0, 1], repeat=5))
 
     for i, player in enumerate(pure_memory_one_strategies):
-        for j, coplayer in enumerate(pure_memory_one_strategies):
-            ss = stationary.stationary(player, coplayer, PARAMETERS['epsilon'], PARAMETERS['delta'])
-            payoff_matrix[i, j] = sum(ss @ np.array([b - c, -c, b, 0]))
+        for j, co_player in enumerate(pure_memory_one_strategies):
+            ss = stationary.stationary(player, co_player, epsilon=epsilon, delta=delta)
+            payoff_matrix[i, j] = sum(ss @ np.array([benefit - cost, -cost, benefit, 0]))
 
     return payoff_matrix
 
 # %%
-def infer_best_response_and_expected_payoffs(history):
+def infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon):
+    """Based on a given initial sequences (history) we try to infer the strategy
+    of the co-player.
+    
+    We calculate the posterior distribution given that co-player's
+    strategy is in Delta. Namely, the posterior distribution: $p(i)$, where $i$
+    is the index of the strategy $[1, 32]$.
+
+    We then calculate the long term payoffs for the player $\pi(i, j)$
+    of strategy $i$ against strategy $j$
+
+    If the focal player takes strategy $1$, for instance, the expected long-term 
+    payoff $P(1) = $\sum_i \pi(1, i) p(i)$.
+
+    In general, $P(j) = \sum_i \pi(j, i) p(i)$. We want to find the strategy $j$
+    that maximizes $P(j)$. Namely, $j = \argmax P(j)$.
+    """
 
     posterior = posterior_distribution(history)
+    # For testing purpose
     print(np.argmax(posterior))
-    payoff_matrix = calculate_payoff_matrix()
+    payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
 
     expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
 
@@ -140,22 +169,3 @@ if __name__ == "__main__":
             total_payoff += lt_payoffs[0]
 
         print(f"{init_seq} {total_payoff}")
-
-# %%
-init_seq = [C,D,C]
-init_seq_str = "".join([a.name for a in init_seq])
-axl.Cycler(init_seq_str)
-
-
-# %%
-pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
-i = list(pure_memory_one_strategies)[10]
-#for i in pure_memory_one_strategies:
-opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]]) # %%
-opponent
-
-# %%
-history = [(1, 1), (1, 1), (0, 1), (0, 1), (1, 1), (0, 1)]
-
-bs, exp_p = infer_best_response_and_expected_payoffs(history)
-# %%
