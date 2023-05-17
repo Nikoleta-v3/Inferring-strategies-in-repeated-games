@@ -22,10 +22,12 @@ PARAMETERS = {
 delta = PARAMETERS["delta"]
 epsilon = PARAMETERS["epsilon"]
 seq_size = PARAMETERS["seq_size"]
+benefit = PARAMETERS["benefit"]
+cost = PARAMETERS["cost"]
 action_map = {1: C, 0: D}
 
 
-def calculate_payoff_matrix():
+def calculate_payoff_matrix(benefit, cost, delta, epsilon):
     """Calculates the payoffs $\pi(i, j)$ for i and j in Delta.
 
     Returns
@@ -36,21 +38,18 @@ def calculate_payoff_matrix():
 
     payoff_matrix = np.zeros((32, 32))
 
-    # The benefit and cost values are not input arguments of the function
-    b, c = PARAMETERS["benefit"], PARAMETERS["cost"]
-
     # For now we only consider pure memory - one strategies
     pure_memory_one_strategies = list(itertools.product([0, 1], repeat=5))
 
     for i, player in enumerate(pure_memory_one_strategies):
         for j, co_player in enumerate(pure_memory_one_strategies):
-            ss = stationary.stationary(player, co_player, PARAMETERS['epsilon'], PARAMETERS['delta'])
-            payoff_matrix[i, j] = sum(ss @ np.array([b - c, -c, b, 0]))
+            ss = stationary.stationary(player, co_player, epsilon=epsilon, delta=delta)
+            payoff_matrix[i, j] = sum(ss @ np.array([benefit - cost, -cost, benefit, 0]))
 
     return payoff_matrix
 
 # %%
-def infer_best_response_and_expected_payoffs(history):
+def infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon):
     """Based on a given initial sequences (history) we try to infer the strategy
     of the co-player.
     
@@ -71,7 +70,7 @@ def infer_best_response_and_expected_payoffs(history):
     posterior = posterior_distribution(history)
     # For testing purpose
     print(np.argmax(posterior))
-    payoff_matrix = calculate_payoff_matrix()
+    payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
 
     expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
 
@@ -187,5 +186,5 @@ opponent
 # %%
 history = [(1, 1), (1, 1), (0, 1), (0, 1), (1, 1), (0, 1)]
 
-bs, exp_p = infer_best_response_and_expected_payoffs(history)
+bs, exp_p = infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon)
 # %%
