@@ -14,7 +14,7 @@ C, D = Action.C, Action.D
 PARAMETERS = {
     "epsilon": 0.001,
     "delta": 0.99,
-    "seq_size": 2,
+    "seq_size": 1,
     "benefit": 1,
     "cost": 0.2
 }
@@ -69,7 +69,7 @@ def infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsi
 
     posterior = posterior_distribution(history)
     # For testing purpose
-    print(np.argmax(posterior))
+    # print(np.argmax(posterior))
     payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
 
     expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
@@ -131,14 +131,11 @@ def long_term_payoffs(
     return payoffs + exp_p * delta ** len(opening_payoffs)
 
 # %%
-initial_sequences = itertools.product([C, D], repeat=seq_size)
-list(initial_sequences)
-
-# %%
 
 if __name__ == "__main__":
 
     # define game with benefit and cost
+    donation = axl.game.Game(r=benefit - cost, s=cost, t=benefit, p=0)
 
     initial_sequences = itertools.product([C, D], repeat=seq_size)
 
@@ -154,18 +151,17 @@ if __name__ == "__main__":
             opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
 
             # simulating game
-            match = axl.Match(players=(s, opponent), turns=len(init_seq))
+            match = axl.Match(players=(s, opponent), turns=len(init_seq), game=donation)
             _ = match.play()
             history = match.result
             opening_payoffs = match.scores()
 
             # inferring co-player and best response
-            bs, exp_p = infer_best_response_and_expected_payoffs(history)
-            bs, exp_p = s.best_response_and_expected_payoffs(history)
+            bs, exp_p = infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon)
 
             lt_payoffs = long_term_payoffs(
-                bs, opponent, history, opening_payoffs, delta, epsilon
+                opening_payoffs, exp_p, delta
             )
-            total_payoff += lt_payoffs[0]
+            total_payoff += lt_payoffs
 
         print(f"{init_seq} {total_payoff}")
