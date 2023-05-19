@@ -48,7 +48,6 @@ def calculate_payoff_matrix(benefit, cost, delta, epsilon):
 
     return payoff_matrix
 
-# %%
 def infer_best_response_and_expected_payoffs(history, payoff_matrix):
     """Based on a given initial sequences (history) we try to infer the strategy
     of the co-player.
@@ -77,7 +76,7 @@ def infer_best_response_and_expected_payoffs(history, payoff_matrix):
     exp_p = np.max(expected_payoffs)
 
     return bs, exp_p
-# %%
+
 def posterior_distribution(history):
     """Compute the posterior distribution of the opponent's strategy."""
     num_possible_s = 32
@@ -118,7 +117,6 @@ def posterior_distribution(history):
         priors = posteriors
 
     return priors
-# %%
 
 def long_term_payoffs(
     opening_payoffs, exp_p, delta
@@ -139,7 +137,6 @@ if __name__ == "__main__":
     initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
 
     payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
-
     for init_seq in initial_sequences:
 
         s = axl.Cycler("".join(init_seq))
@@ -157,10 +154,10 @@ if __name__ == "__main__":
 
             # inferring co-player and best response
             bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_matrix)
-
             lt_payoffs = long_term_payoffs(
                 opening_payoffs, exp_p, delta
             )
             total_payoff += lt_payoffs
 
         print(f"{init_seq} {total_payoff}")
+        
