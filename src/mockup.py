@@ -137,16 +137,11 @@ if __name__ == "__main__":
     # define game with benefit and cost
     donation = axl.game.Game(r=benefit - cost, s=-cost, t=benefit, p=0)
 
-    initial_sequences = itertools.product([C, D], repeat=seq_size)
+    initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
 
-    dpayoffs = []
-    dbs = []
-    dexp = []
     for init_seq in initial_sequences:
-        # make string from list
-        init_seq_str = "".join([a.name for a in init_seq])
-        s = axl.Cycler(init_seq_str)
 
+        s = axl.Cycler("".join(init_seq))
         pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
         total_payoff = 0
 
@@ -158,12 +153,9 @@ if __name__ == "__main__":
             _ = match.play()
             history = match.result
             opening_payoffs = match.scores()
-            dpayoffs.append(opening_payoffs)
 
             # inferring co-player and best response
             bs, exp_p = infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon)
-            dbs.append(bs)
-            dexp.append(exp_p)
 
             lt_payoffs = long_term_payoffs(
                 opening_payoffs, exp_p, delta
