@@ -82,8 +82,8 @@ def infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsi
 def posterior_distribution(history):
     """Compute the posterior distribution of the opponent's strategy."""
     num_possible_s = 32
-    last_turn_outcomes = ["p0"] + list(itertools.product([1, 0], repeat=2))
-    pure_transitions = list(itertools.product([0, 1], repeat=5))
+    last_turn_outcomes = ["p0"] + list(itertools.product([C, D], repeat=2))
+    pure_transitions = list(itertools.product([D, C], repeat=5))
     pure_strategies = {
         f"M{i}": {k: v for k, v in zip(last_turn_outcomes, transitions)}
         for i, transitions in enumerate(pure_transitions)
@@ -135,10 +135,13 @@ def long_term_payoffs(
 if __name__ == "__main__":
 
     # define game with benefit and cost
-    donation = axl.game.Game(r=benefit - cost, s=cost, t=benefit, p=0)
+    donation = axl.game.Game(r=benefit - cost, s=-cost, t=benefit, p=0)
 
     initial_sequences = itertools.product([C, D], repeat=seq_size)
 
+    dpayoffs = []
+    dbs = []
+    dexp = []
     for init_seq in initial_sequences:
         # make string from list
         init_seq_str = "".join([a.name for a in init_seq])
@@ -146,7 +149,7 @@ if __name__ == "__main__":
 
         pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
         total_payoff = 0
-        #s = BayesianBestResponseStrategy(init_seq)
+
         for i in pure_memory_one_strategies:
             opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
 
@@ -155,9 +158,12 @@ if __name__ == "__main__":
             _ = match.play()
             history = match.result
             opening_payoffs = match.scores()
+            dpayoffs.append(opening_payoffs)
 
             # inferring co-player and best response
             bs, exp_p = infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon)
+            dbs.append(bs)
+            dexp.append(exp_p)
 
             lt_payoffs = long_term_payoffs(
                 opening_payoffs, exp_p, delta
