@@ -14,7 +14,7 @@ C, D = Action.C, Action.D
 PARAMETERS = {
     "epsilon": 0.001,
     "delta": 0.99,
-    "seq_size": 2,
+    "seq_size": 1,
     "benefit": 1,
     "cost": 0.2
 }
@@ -48,8 +48,7 @@ def calculate_payoff_matrix(benefit, cost, delta, epsilon):
 
     return payoff_matrix
 
-# %%
-def infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsilon):
+def infer_best_response_and_expected_payoffs(history, payoff_matrix):
     """Based on a given initial sequences (history) we try to infer the strategy
     of the co-player.
     
@@ -69,8 +68,7 @@ def infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsi
 
     posterior = posterior_distribution(history)
     # For testing purpose
-    print(np.argmax(posterior))
-    payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
+    # print(np.argmax(posterior))
 
     expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
 
@@ -78,12 +76,12 @@ def infer_best_response_and_expected_payoffs(history, benefit, cost, delta, epsi
     exp_p = np.max(expected_payoffs)
 
     return bs, exp_p
-# %%
+
 def posterior_distribution(history):
     """Compute the posterior distribution of the opponent's strategy."""
     num_possible_s = 32
-    last_turn_outcomes = ["p0"] + list(itertools.product([1, 0], repeat=2))
-    pure_transitions = list(itertools.product([0, 1], repeat=5))
+    last_turn_outcomes = ["p0"] + list(itertools.product([C, D], repeat=2))
+    pure_transitions = list(itertools.product([D, C], repeat=5))
     pure_strategies = {
         f"M{i}": {k: v for k, v in zip(last_turn_outcomes, transitions)}
         for i, transitions in enumerate(pure_transitions)
@@ -119,7 +117,6 @@ def posterior_distribution(history):
         priors = posteriors
 
     return priors
-# %%
 
 def long_term_payoffs(
     opening_payoffs, exp_p, delta
@@ -131,41 +128,36 @@ def long_term_payoffs(
     return payoffs + exp_p * delta ** len(opening_payoffs)
 
 # %%
-initial_sequences = itertools.product([C, D], repeat=seq_size)
-list(initial_sequences)
-
-# %%
 
 if __name__ == "__main__":
 
     # define game with benefit and cost
+    donation = axl.game.Game(r=benefit - cost, s=-cost, t=benefit, p=0)
 
-    initial_sequences = itertools.product([C, D], repeat=seq_size)
+    initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
 
+    payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
     for init_seq in initial_sequences:
-        # make string from list
-        init_seq_str = "".join([a.name for a in init_seq])
-        s = axl.Cycler(init_seq_str)
 
+        s = axl.Cycler("".join(init_seq))
         pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
         total_payoff = 0
-        #s = BayesianBestResponseStrategy(init_seq)
+
         for i in pure_memory_one_strategies:
             opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
 
             # simulating game
-            match = axl.Match(players=(s, opponent), turns=len(init_seq))
+            match = axl.Match(players=(s, opponent), turns=len(init_seq), game=donation)
             _ = match.play()
             history = match.result
             opening_payoffs = match.scores()
 
             # inferring co-player and best response
-            bs, exp_p = infer_best_response_and_expected_payoffs(history)
-            bs, exp_p = s.best_response_and_expected_payoffs(history)
-
+            bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_matrix)
             lt_payoffs = long_term_payoffs(
-                bs, opponent, history, opening_payoffs, delta, epsilon
+                opening_payoffs, exp_p, delta
             )
-            total_payoff += lt_payoffs[0]
+            total_payoff += lt_payoffs
 
         print(f"{init_seq} {total_payoff}")
+        

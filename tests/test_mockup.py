@@ -10,8 +10,13 @@ import mockup as mcu
 
 import numpy as np
 
+from axelrod.action import Action
+
+C, D = Action.C, Action.D
+
+
 def test_calculate_payoff_matrix():
-    benefit, cost, delta, epsilon = 2, 1, .999, 0
+    benefit, cost, delta, epsilon = 2, 1, 0.999, 0
 
     matrix = mcu.calculate_payoff_matrix(benefit, cost, delta, epsilon)
 
@@ -24,33 +29,33 @@ def test_calculate_payoff_matrix():
 
     # ALLC
     assert np.isclose(matrix[31, 0], -1)
-    assert np.isclose(matrix[31, 26], 1) # TFT (C)
-    assert np.isclose(matrix[31, 10], 0.998) # TFT (D)
+    assert np.isclose(matrix[31, 26], 1)  # TFT (C)
+    assert np.isclose(matrix[31, 10], 0.998)  # TFT (D)
 
     # TFT
     assert np.isclose(matrix[26, 26], 1)
-    assert np.isclose(matrix[26, 25], 1) # WSLS
+    assert np.isclose(matrix[26, 25], 1)  # WSLS
 
 
 def test_posterior_distribution_TFT_C():
-    history = [(1, 1), (0, 1), (1, 0), (0, 1), (0, 0), (0, 0)]
+    history = [(C, C), (D, C), (C, D), (D, C), (D, D), (D, D)]
     posterior = mcu.posterior_distribution(history)
     assert np.argmax(posterior) == 26
 
 
 def test_posterior_distribution_TFT_D():
-    history = [(1, 0), (1, 1), (0, 1), (0, 0), (0, 0), (0, 0)]
+    history = [(C, D), (C, C), (D, C), (D, D), (D, D), (D, D)]
     posterior = mcu.posterior_distribution(history)
     assert np.argmax(posterior) == 10
 
 
 def test_posterior_distribution_WSLS_C():
-    history = [(1, 1), (0, 1), (1, 0), (0, 0), (0, 1)]
+    history = [(C, C), (D, C), (C, D), (D, D), (D, C)]
     posterior = mcu.posterior_distribution(history)
     assert np.argmax(posterior) == 25
 
 
 def test_posterior_distribution_WSLS_D():
-    history = [(1, 0), (0, 0), (1, 1), (1, 1), (0, 1), (0, 0)]
+    history = [(C, D), (D, D), (C, C), (C, C), (D, C), (D, D)]
     posterior = mcu.posterior_distribution(history)
     assert np.argmax(posterior) == 9
