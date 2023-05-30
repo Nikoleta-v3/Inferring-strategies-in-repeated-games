@@ -12,7 +12,7 @@ import stationary
 C, D = Action.C, Action.D
 
 PARAMETERS = {
-    "epsilon": 0.001,
+    "epsilon": 0.00,
     "delta": 0.99,
     "seq_size": 1,
     "benefit": 1,
@@ -160,4 +160,6 @@ if __name__ == "__main__":
             total_payoff += lt_payoffs
 
         print(f"{init_seq} {total_payoff}")
-        
+        f = open(f"{''.join(init_seq)}.txt", "w")
+        f.write(f"{benefit}, {cost}, {delta}, {epsilon}, {total_payoff}")
+        f.close()
