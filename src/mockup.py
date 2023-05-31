@@ -26,6 +26,7 @@ benefit = PARAMETERS["benefit"]
 cost = PARAMETERS["cost"]
 action_map = {1: C, 0: D}
 
+# %%
 
 def calculate_payoff_matrix(benefit, cost, delta, epsilon):
     """Calculates the payoffs $\pi(i, j)$ for i and j in Delta.
@@ -125,7 +126,8 @@ def long_term_payoffs(
     payoffs = 0
     for turn, turn_payoff in enumerate(opening_payoffs):
         payoffs += turn_payoff[0] * delta ** turn
-    return payoffs + exp_p * delta ** len(opening_payoffs)
+    # print(payoffs, exp_p)
+    return payoffs + exp_p * delta ** len(opening_payoffs) / (1.0-delta)
 
 # %%
 
@@ -163,3 +165,4 @@ if __name__ == "__main__":
         f = open(f"{''.join(init_seq)}.txt", "w")
         f.write(f"{benefit}, {cost}, {delta}, {epsilon}, {total_payoff}")
         f.close()
+# %%
