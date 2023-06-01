@@ -44,10 +44,21 @@ def calculate_payoff_matrix(benefit, cost, delta, epsilon):
     for i, player in enumerate(pure_memory_one_strategies):
         for j, co_player in enumerate(pure_memory_one_strategies):
             ss = stationary.stationary(player, co_player, epsilon=epsilon, delta=delta)
-            payoff_matrix[i, j] = sum(ss @ np.array([benefit - cost, -cost, benefit, 0]))
+            payoff_matrix[i, j] = ss @ np.array([benefit - cost, -cost, benefit, 0])
 
     return payoff_matrix
 
+mat = calculate_payoff_matrix(benefit, cost, delta, epsilon)
+print(mat)
+print(mat.shape)  # => (32,32)
+mat[0][0]    # => 0.0 (AllD vs AllD)
+mat[31][31]  # => benefit-cost (AllC vs AllC)
+mat[0][31]   # => benefit (AllD vs AllC)
+mat[31][0]   # => -cost (AllC vs AllD)
+mat[25][25]  # benefit-cost (WSLS-c vs WSLS-c)
+mat[8] == mat[0] # GT-d behaves like AllD
+
+# %%
 def infer_best_response_and_expected_payoffs(history, payoff_matrix):
     """Based on a given initial sequences (history) we try to infer the strategy
     of the co-player.
@@ -91,6 +102,8 @@ def infer_best_response_and_expected_payoffs(history, payoff_matrix):
 
     return bs, exp_p
 
+
+# %%
 def long_term_payoffs(
     opening_payoffs, exp_p, delta
 ):
