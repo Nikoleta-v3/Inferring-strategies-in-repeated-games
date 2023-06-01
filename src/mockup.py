@@ -26,6 +26,22 @@ cost = PARAMETERS["cost"]
 action_map = {1: C, 0: D}
 
 # %%
+def print_strategy(idx):
+    if idx < 0 or idx > 31:
+        raise ValueError("idx must be between 0 and 31")
+    init = C if idx & 0b10000 > 0 else D
+    pcc =  C if idx & 0b01000 > 0 else D
+    pcd =  C if idx & 0b00100 > 0 else D
+    pdc =  C if idx & 0b00010 > 0 else D
+    pdd =  C if idx & 0b00001 > 0 else D
+    print(f"init: {init}, pcc: {pcc}, pcd: {pcd}, pdc: {pdc}, pdd: {pdd}")
+    return (init, pcc, pcd, pdc, pdd)
+
+print_strategy(0b00000)  # ALLD-d
+print_strategy(25)  # WSLS-c
+print_strategy(10)  # TFT-d
+
+# %%
 
 def calculate_payoff_matrix(benefit, cost, delta, epsilon):
     """Calculates the payoffs $\pi(i, j)$ for i and j in Delta.
@@ -81,27 +97,34 @@ def infer_best_response_and_expected_payoffs(history, payoff_matrix):
     posterior = posterior_distribution(history)
     initial_coplayer_move = history[-1][1]
     # we consider a repeated game starting from t=(len(history)-1)
+    zero_16 = np.full((16,), 0.0)
     if initial_coplayer_move == C:
-        posterior = [0] * 16 + posterior
+        posterior = np.concatenate((zero_16, posterior))
     else:
-        posterior = posterior + [0] * 16
-    print(history,posterior)
+        posterior = np.concatenate((posterior, zero_16))
 
     expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
+    # expected_payoffs[i] = \sum_j \pi(i, j) p(j)
+    # expected_payoff when the focal player takes strategy i
 
     initial_focal_player_move = history[-1][0]
     if initial_focal_player_move == C:
         # we have to choose the best response from [16, 31]
-        expected_payoffs = expected_payoffs[:16] + [-np.inf] * 16
+        expected_payoffs[0:16] = -np.inf
     else:
         # we have to choose the best response from [0, 15]
-        expected_payoffs = [-np.inf] * 16 + expected_payoffs[16:]
+        expected_payoffs[16:32] = -np.inf
+    print(expected_payoffs)
 
     bs = np.argmax(expected_payoffs)
     exp_p = np.max(expected_payoffs)
 
     return bs, exp_p
 
+mat = calculate_payoff_matrix(benefit, cost, delta, epsilon)
+bs,exp_p = infer_best_response_and_expected_payoffs([(C,C),(D,C),(C,D),(C,C)], mat)
+# bs,exp_p = infer_best_response_and_expected_payoffs([(D,C),(C,D),(D,D),(C,C),(C,C)], mat)   # WSLS-c
+bs,exp_p
 
 # %%
 def long_term_payoffs(
@@ -174,7 +197,7 @@ def posterior_distribution(history):
     # normalize prior
     if sum(prior) == 0:
         raise ValueError("Inconsistent history")
-    prior = [p/sum(prior) for p in prior]
+    prior = np.array([p/sum(prior) for p in prior])
     return prior
 
 
@@ -188,7 +211,7 @@ def posterior_distribution(history):
 # posterior_distribution(history)   # => [0, 0.25] * 4 + [0] * 8
 
 history = [(C,C),(D,D),(D,C),(C,D),(D,C)]
-posterior_distribution(history)   # => [0] * 5 + [1] + [0] * 10
+posterior_distribution(history)   # => [0,0,0,0,0,1,0,0,...0]
 
 # history = [(D,D),(D,D),(D,C)]   # for inconsistent history
 # posterior_distribution(history)   # => raise Exeception
