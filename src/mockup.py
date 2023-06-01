@@ -26,7 +26,7 @@ cost = PARAMETERS["cost"]
 action_map = {1: C, 0: D}
 
 # %%
-def print_strategy(idx):
+def idx_to_strategy(idx, print = False):
     if idx < 0 or idx > 31:
         raise ValueError("idx must be between 0 and 31")
     init = C if idx & 0b10000 > 0 else D
@@ -34,12 +34,9 @@ def print_strategy(idx):
     pcd =  C if idx & 0b00100 > 0 else D
     pdc =  C if idx & 0b00010 > 0 else D
     pdd =  C if idx & 0b00001 > 0 else D
-    print(f"init: {init}, pcc: {pcc}, pcd: {pcd}, pdc: {pdc}, pdd: {pdd}")
+    if print:
+        print(f"init: {init}, pcc: {pcc}, pcd: {pcd}, pdc: {pdc}, pdd: {pdd}")
     return (init, pcc, pcd, pdc, pdd)
-
-print_strategy(0b00000)  # ALLD-d
-print_strategy(25)  # WSLS-c
-print_strategy(10)  # TFT-d
 
 # %%
 
@@ -64,15 +61,6 @@ def calculate_payoff_matrix(benefit, cost, delta, epsilon):
 
     return payoff_matrix
 
-mat = calculate_payoff_matrix(benefit, cost, delta, epsilon)
-print(mat)
-print(mat.shape)  # => (32,32)
-mat[0][0]    # => 0.0 (AllD vs AllD)
-mat[31][31]  # => benefit-cost (AllC vs AllC)
-mat[0][31]   # => benefit (AllD vs AllC)
-mat[31][0]   # => -cost (AllC vs AllD)
-mat[25][25]  # benefit-cost (WSLS-c vs WSLS-c)
-mat[8] == mat[0] # GT-d behaves like AllD
 
 # %%
 def posterior_distribution(history):
@@ -135,20 +123,6 @@ def posterior_distribution(history):
     return prior
 
 
-# history = [(C,C)]
-# posterior_distribution(history)  #=> [1/16] * 16
-
-# history = [(C,C),(D,D)]
-# posterior_distribution(history)   #=> [1/8] * 8 + [0] * 8
-
-# history = [(C,C),(D,D),(D,C)]
-# posterior_distribution(history)   # => [0, 0.25] * 4 + [0] * 8
-
-history = [(C,C),(D,D),(D,C),(C,D),(D,C)]
-posterior_distribution(history)   # => [0,0,0,0,0,1,0,0,...0]
-
-# history = [(D,D),(D,D),(D,C)]   # for inconsistent history
-# posterior_distribution(history)   # => raise Exeception
 # %%
 def infer_best_response_and_expected_payoffs(history, payoff_matrix):
     """Based on a given initial sequences (history) we try to infer the strategy
