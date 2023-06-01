@@ -90,15 +90,7 @@ def posterior_distribution(history):
                     if i & 0b1000 != 0:
                         prior[i] = 0
         if prev == (C,D):
-            if curr == C:
-                for i in range(16):
-                    if i & 0b0100 == 0:
-                        prior[i] = 0
-            if curr == D:
-                for i in range(16):
-                    if i & 0b0100 != 0:
-                        prior[i] = 0
-        if prev == (D,C):
+            # from co-player's viewpoint, this is (D,C)
             if curr == C:
                 for i in range(16):
                     if i & 0b0010 == 0:
@@ -106,6 +98,16 @@ def posterior_distribution(history):
             if curr == D:
                 for i in range(16):
                     if i & 0b0010 != 0:
+                        prior[i] = 0
+        if prev == (D,C):
+            # from co-player's viewpoint, this is (C,D)
+            if curr == C:
+                for i in range(16):
+                    if i & 0b0100 == 0:
+                        prior[i] = 0
+            if curr == D:
+                for i in range(16):
+                    if i & 0b0100 != 0:
                         prior[i] = 0
         if prev == (D,D):
             if curr == C:

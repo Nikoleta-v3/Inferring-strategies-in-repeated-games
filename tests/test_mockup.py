@@ -58,9 +58,9 @@ class TestMockup(unittest.TestCase):
         expected = np.array([0, 0.25] * 4 + [0] * 8)
         np.testing.assert_allclose(mcu.posterior_distribution(history), expected)
 
-        # when p_cc = 0, p_dd = 1, p_dc = 0, p_cd = 1  (0101)
+        # when p_cc = 0, p_dd = 1, p_cd = 0, p_dc = 1  (0011)
         history = [(C,C),(D,D),(D,C),(C,D),(D,C)]
-        expected = np.array([0,0,0,0,0,1,0,0] + [0] * 8)
+        expected = np.array([0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0])
         np.testing.assert_allclose(mcu.posterior_distribution(history), expected)
 
         history = [(D,D),(D,D),(D,C)]
@@ -71,7 +71,7 @@ class TestMockup(unittest.TestCase):
     def test_posterior_distribution_TFT(self):
         history = [(C, C), (D, C), (D, D), (C, D), (C, C)]
         posterior = mcu.posterior_distribution(history)
-        self.assertEqual(np.argmax(posterior), 0b1100)
+        self.assertEqual(np.argmax(posterior), 0b1010)
 
 
     def test_posterior_distribution_WSLS(self):
