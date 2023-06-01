@@ -132,6 +132,7 @@ class TestMockup(unittest.TestCase):
         self.assertAlmostEqual(exp_p, expected*(1.0-delta))
 
         # naive cooperator (do not retaliate even if defected)
+        # the best response is to keep defecting ((D,C) continues)
         history = [(D,C),(D,C)]
         bs,exp_p = mcu.infer_best_response_and_expected_payoffs(history, mat)
         self.assertEqual(bs, 0b00000)
