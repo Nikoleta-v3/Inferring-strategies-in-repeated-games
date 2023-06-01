@@ -13,7 +13,7 @@ C, D = Action.C, Action.D
 PARAMETERS = {
     "epsilon": 0.00,
     "delta": 0.99,
-    "seq_size": 1,
+    "seq_size": 2,
     "benefit": 1,
     "cost": 0.2
 }
@@ -75,69 +75,6 @@ mat[25][25]  # benefit-cost (WSLS-c vs WSLS-c)
 mat[8] == mat[0] # GT-d behaves like AllD
 
 # %%
-def infer_best_response_and_expected_payoffs(history, payoff_matrix):
-    """Based on a given initial sequences (history) we try to infer the strategy
-    of the co-player.
-    
-    We calculate the posterior distribution given that co-player's
-    strategy is in Delta. Namely, the posterior distribution: $p(i)$, where $i$
-    is the index of the strategy $[1, 16]$.
-
-    We then calculate the long term payoffs for the player $\pi(i, j)$
-    of strategy $i$ against strategy $j$.
-    Here, the we consider the case where the initial moves are history[-1] because players continue the game after the initial moves.
-
-    If the focal player takes strategy $1$, for instance, the expected long-term 
-    payoff $P(1) = $\sum_i \pi(1, i) p(i)$.
-
-    In general, $P(j) = \sum_i \pi(j, i) p(i)$. We want to find the strategy $j$
-    that maximizes $P(j)$. Namely, $j = \argmax P(j)$.
-    """
-
-    posterior = posterior_distribution(history)
-    initial_coplayer_move = history[-1][1]
-    # we consider a repeated game starting from t=(len(history)-1)
-    zero_16 = np.full((16,), 0.0)
-    if initial_coplayer_move == C:
-        posterior = np.concatenate((zero_16, posterior))
-    else:
-        posterior = np.concatenate((posterior, zero_16))
-
-    expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
-    # expected_payoffs[i] = \sum_j \pi(i, j) p(j)
-    # expected_payoff when the focal player takes strategy i
-
-    initial_focal_player_move = history[-1][0]
-    if initial_focal_player_move == C:
-        # we have to choose the best response from [16, 31]
-        expected_payoffs[0:16] = -np.inf
-    else:
-        # we have to choose the best response from [0, 15]
-        expected_payoffs[16:32] = -np.inf
-    print(expected_payoffs)
-
-    bs = np.argmax(expected_payoffs)
-    exp_p = np.max(expected_payoffs)
-
-    return bs, exp_p
-
-mat = calculate_payoff_matrix(benefit, cost, delta, epsilon)
-bs,exp_p = infer_best_response_and_expected_payoffs([(C,C),(D,C),(C,D),(C,C)], mat)
-# bs,exp_p = infer_best_response_and_expected_payoffs([(D,C),(C,D),(D,D),(C,C),(C,C)], mat)   # WSLS-c
-bs,exp_p
-
-# %%
-def long_term_payoffs(
-    opening_payoffs, exp_p, delta
-):
-    """Compute the long term payoffs of the strategy against the opponent."""
-    payoffs = 0
-    for turn, turn_payoff in enumerate(opening_payoffs):
-        payoffs += turn_payoff[0] * delta ** turn
-    # print(payoffs, exp_p)
-    return payoffs + exp_p * delta ** len(opening_payoffs) / (1.0-delta)
-
-# %%
 def posterior_distribution(history):
     """
     Infer the co-player's strategy based on the history of the game.
@@ -155,16 +92,13 @@ def posterior_distribution(history):
     for turn in range(1, len(history)):
         prev = history[turn-1]  # previous moves
         curr = history[turn][1] # co-players' current move
-        print(prev,curr)
         if prev == (C,C):
             if curr == C:
                 for i in range(16):
                     if i & 0b1000 == 0:
                         prior[i] = 0
             if curr == D:
-                print("aaa")
                 for i in range(16):
-                    print(i)
                     if i & 0b1000 != 0:
                         prior[i] = 0
         if prev == (C,D):
@@ -216,6 +150,69 @@ posterior_distribution(history)   # => [0,0,0,0,0,1,0,0,...0]
 # history = [(D,D),(D,D),(D,C)]   # for inconsistent history
 # posterior_distribution(history)   # => raise Exeception
 # %%
+def infer_best_response_and_expected_payoffs(history, payoff_matrix):
+    """Based on a given initial sequences (history) we try to infer the strategy
+    of the co-player.
+    
+    We calculate the posterior distribution given that co-player's
+    strategy is in Delta. Namely, the posterior distribution: $p(i)$, where $i$
+    is the index of the strategy $[1, 16]$.
+
+    We then calculate the long term payoffs for the player $\pi(i, j)$
+    of strategy $i$ against strategy $j$.
+    Here, the we consider the case where the initial moves are history[-1] because players continue the game after the initial moves.
+
+    If the focal player takes strategy $1$, for instance, the expected long-term 
+    payoff $P(1) = $\sum_i \pi(1, i) p(i)$.
+
+    In general, $P(j) = \sum_i \pi(j, i) p(i)$. We want to find the strategy $j$
+    that maximizes $P(j)$. Namely, $j = \argmax P(j)$.
+    """
+
+    posterior = posterior_distribution(history)
+    last_coplayer_move = history[-1][1]
+    # we consider a repeated game starting from t=(len(history)-1)
+    zero_16 = np.full((16,), 0.0)
+    if last_coplayer_move == C:
+        posterior = np.concatenate((zero_16, posterior))
+    else:
+        posterior = np.concatenate((posterior, zero_16))
+
+    expected_payoffs = np.sum(payoff_matrix * posterior, axis=1)
+    # expected_payoffs[i] = \sum_j \pi(i, j) p(j)
+    # expected_payoff when the focal player takes strategy i
+
+    last_focal_player_move = history[-1][0]
+    if last_focal_player_move == C:
+        # we have to choose the best response from [16, 31]
+        expected_payoffs[0:16] = -np.inf
+    else:
+        # we have to choose the best response from [0, 15]
+        expected_payoffs[16:32] = -np.inf
+    # print(expected_payoffs)
+
+    bs = np.argmax(expected_payoffs)
+    exp_p = np.max(expected_payoffs)
+
+    return bs, exp_p
+
+mat = calculate_payoff_matrix(benefit, cost, delta, epsilon)
+bs,exp_p = infer_best_response_and_expected_payoffs([(C,C),(D,C),(C,D),(C,C)], mat)
+# bs,exp_p = infer_best_response_and_expected_payoffs([(D,C),(C,D),(D,D),(C,C),(C,C)], mat)   # WSLS-c
+bs,exp_p
+
+# %%
+def long_term_total_payoff(
+    opening_payoffs, exp_p, delta
+):
+    """Compute the long term payoffs of the strategy against the opponent."""
+    payoffs = 0
+    for turn, turn_payoff in enumerate(opening_payoffs):
+        payoffs += turn_payoff[0] * delta ** turn
+    # print(payoffs, exp_p)
+    return payoffs + exp_p * delta ** len(opening_payoffs) / (1.0-delta)
+
+# %%
 
 if __name__ == "__main__":
 
@@ -242,8 +239,9 @@ if __name__ == "__main__":
 
             # inferring co-player and best response
             bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_matrix)
-            lt_payoffs = long_term_payoffs(
-                opening_payoffs, exp_p, delta
+            # exclude the last payoff because it is included in exp_p
+            lt_payoffs = long_term_total_payoff(
+                opening_payoffs[:-1], exp_p, delta
             )
             total_payoff += lt_payoffs
 
