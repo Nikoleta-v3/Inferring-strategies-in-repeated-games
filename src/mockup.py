@@ -39,7 +39,6 @@ def idx_to_strategy(idx, print = False):
     return (init, pcc, pcd, pdc, pdd)
 
 # %%
-
 def calculate_payoff_matrix(benefit, cost, delta, epsilon):
     """Calculates the payoffs $\pi(i, j)$ for i and j in Delta.
 
@@ -165,22 +164,16 @@ def infer_best_response_and_expected_payoffs(history, payoff_matrix):
     else:
         # we have to choose the best response from [0, 15]
         expected_payoffs[16:32] = -np.inf
-    # print(expected_payoffs)
+    #print(expected_payoffs)
 
     bs = np.argmax(expected_payoffs)
     exp_p = np.max(expected_payoffs)
 
     return bs, exp_p
 
-mat = calculate_payoff_matrix(benefit, cost, delta, epsilon)
-bs,exp_p = infer_best_response_and_expected_payoffs([(C,C),(D,C),(C,D),(C,C)], mat)
-# bs,exp_p = infer_best_response_and_expected_payoffs([(D,C),(C,D),(D,D),(C,C),(C,C)], mat)   # WSLS-c
-bs,exp_p
 
 # %%
-def long_term_total_payoff(
-    opening_payoffs, exp_p, delta
-):
+def long_term_total_payoff(opening_payoffs, exp_p, delta):
     """Compute the long term payoffs of the strategy against the opponent."""
     payoffs = 0
     for turn, turn_payoff in enumerate(opening_payoffs):

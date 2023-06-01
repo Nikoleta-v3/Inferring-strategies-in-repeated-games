@@ -95,7 +95,48 @@ class TestMockup(unittest.TestCase):
         self.assertAlmostEqual(mat[0][31], benefit) # AllD vs AllC
         self.assertAlmostEqual(mat[31][0], -cost) # AllC vs AllD
         self.assertAlmostEqual(mat[25][25], benefit-cost) # WSLS-c vs WSLS-c
+        self.assertAlmostEqual(mat[26][26], benefit-cost) # TFT-c vs TFT-c
+        self.assertAlmostEqual(mat[10][10], 0.0) # TFT-d vs TFT-d
+        self.assertAlmostEqual(mat[26][0], -cost*(1.0-delta)) # TFT-c vs AllD-d
+        self.assertAlmostEqual(mat[0][26], benefit*(1.0-delta)) # AllD vs TFT-c
         self.assertTrue(np.all(mat[8] == mat[0])) # GT-d behaves like AllD
+
+
+    def test_long_term_total_payoff(self):
+        delta = 0.9
+        opening_payoffs = [[1.0,0], [0.9,0], [0.8,0]]
+        tp = mcu.long_term_total_payoff(opening_payoffs, 0.7, delta)
+        expected = 1.0 + 0.9 * delta + 0.8 * delta**2 + 0.7/0.1 * delta**3
+        self.assertAlmostEqual(tp, expected)
+
+
+    def test_infer_best_response_and_expected_payoffs(self):
+        benefit,cost,delta,epsilon = 1.0,0.2,0.99,0
+        mat = mcu.calculate_payoff_matrix(benefit, cost, delta, epsilon)
+
+        # WSLS-c
+        history = [(D,C),(C,D),(D,D),(C,C),(C,C)]
+        bs,exp_p = mcu.infer_best_response_and_expected_payoffs(history, mat)
+        self.assertAlmostEqual(exp_p, 0.8) # continue mutual cooperation
+
+        # TFT-c
+        history = [(C,C),(D,C),(D,D),(C,D),(C,C)]
+        bs,exp_p = mcu.infer_best_response_and_expected_payoffs(history, mat)
+        self.assertAlmostEqual(exp_p, 0.8) # continue mutual cooperation
+
+        # TFT-d
+        history = [(C,C),(D,C),(D,D),(C,D),(D,C),(D,D)]
+        bs,exp_p = mcu.infer_best_response_and_expected_payoffs(history, mat)
+        #expected = 0 + (-0.2) * delta + (0.8) * delta**2 + ...
+        expected = 0 + (-0.2) * delta + (0.8) * delta**2 / (1.0-delta)
+        self.assertAlmostEqual(exp_p, expected*(1.0-delta))
+
+        # naive cooperator (do not retaliate even if defected)
+        history = [(D,C),(D,C)]
+        bs,exp_p = mcu.infer_best_response_and_expected_payoffs(history, mat)
+        self.assertEqual(bs, 0b00000)
+        self.assertAlmostEqual(exp_p, 1.0)
+
 
 
 if __name__ == '__main__':
