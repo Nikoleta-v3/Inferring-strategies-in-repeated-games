@@ -10,19 +10,6 @@ import stationary
 
 C, D = Action.C, Action.D
 
-PARAMETERS = {
-    "epsilon": 0.00,
-    "delta": 0.99,
-    "seq_size": 2,
-    "benefit": 1,
-    "cost": 0.2
-}
-
-delta = PARAMETERS["delta"]
-epsilon = PARAMETERS["epsilon"]
-seq_size = PARAMETERS["seq_size"]
-benefit = PARAMETERS["benefit"]
-cost = PARAMETERS["cost"]
 action_map = {1: C, 0: D}
 
 # %%
@@ -185,37 +172,58 @@ def long_term_total_payoff(opening_payoffs, exp_p, delta):
 
 if __name__ == "__main__":
 
-    # define game with benefit and cost
-    donation = axl.game.Game(r=benefit - cost, s=-cost, t=benefit, p=0)
+    values_c = np.linspace(0, 1, 20)
+    seq_sizes = range(1, 6)
+    delta = np.linspace(0.5, 1, 10)
 
-    initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
+    parameter_search = itertools.product(values_c, seq_sizes, delta)
+    
+    for c, size, d in parameter_search:
 
-    payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
-    for init_seq in initial_sequences:
+        PARAMETERS = {
+        "epsilon": 0.00,
+        "delta": d,
+        "seq_size": size,
+        "benefit": 1,
+        "cost": c
+    }
 
-        s = axl.Cycler("".join(init_seq))
-        pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
-        total_payoff = 0
+        delta = PARAMETERS["delta"]
+        epsilon = PARAMETERS["epsilon"]
+        seq_size = PARAMETERS["seq_size"]
+        benefit = PARAMETERS["benefit"]
+        cost = PARAMETERS["cost"]
 
-        for i in pure_memory_one_strategies:
-            opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
+        # define game with benefit and cost
+        donation = axl.game.Game(r=benefit - cost, s=-cost, t=benefit, p=0)
 
-            # simulating game
-            match = axl.Match(players=(s, opponent), turns=len(init_seq), game=donation)
-            _ = match.play()
-            history = match.result
-            opening_payoffs = match.scores()
+        initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
 
-            # inferring co-player and best response
-            bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_matrix)
-            # exclude the last payoff because it is included in exp_p
-            lt_payoffs = long_term_total_payoff(
-                opening_payoffs[:-1], exp_p, delta
-            )
-            total_payoff += lt_payoffs
+        payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
+        for init_seq in initial_sequences:
 
-        print(f"{init_seq} {total_payoff}")
-        f = open(f"{''.join(init_seq)}.txt", "w")
-        f.write(f"{benefit}, {cost}, {delta}, {epsilon}, {total_payoff}")
-        f.close()
-# %%
+            s = axl.Cycler("".join(init_seq))
+            pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
+            total_payoff = 0
+
+            for i in pure_memory_one_strategies:
+                opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
+
+                # simulating game
+                match = axl.Match(players=(s, opponent), turns=len(init_seq), game=donation)
+                _ = match.play()
+                history = match.result
+                opening_payoffs = match.scores()
+
+                # inferring co-player and best response
+                bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_matrix)
+                # exclude the last payoff because it is included in exp_p
+                lt_payoffs = long_term_total_payoff(
+                    opening_payoffs[:-1], exp_p, delta
+                )
+                total_payoff += lt_payoffs
+
+            print(f"{init_seq} {total_payoff}")
+            f = open(f"../data/{''.join(init_seq)}_c_{cost}_delta_{delta}.txt", "w")
+            f.write(f"{benefit}, {cost}, {delta}, {epsilon}, {total_payoff}")
+            f.close()
