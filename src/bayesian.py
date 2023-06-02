@@ -12,10 +12,6 @@ def init_prior_uniform(n):
     return 1 / n
 
 
-def normalising_constant(priors, likelihoods):
-    return sum([p * l for p, l in zip(priors, likelihoods)])
-
-
 def posterior(priors, likelihoods):
     a = np.array([x * y for x, y in zip(priors, likelihoods)])
     a /= sum(a)
