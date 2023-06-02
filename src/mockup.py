@@ -182,40 +182,53 @@ def long_term_total_payoff(opening_payoffs, exp_p, delta):
     return payoffs + exp_p * delta ** len(opening_payoffs) / (1.0-delta)
 
 # %%
-
-if __name__ == "__main__":
-
+def best_response_payoff(init_seq, payoff_mat, benefit, cost, delta):
     # define game with benefit and cost
     donation = axl.game.Game(r=benefit - cost, s=-cost, t=benefit, p=0)
 
-    initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
+    s = axl.Cycler("".join(init_seq))
+    pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
+    total_payoff = 0
 
+    for i in pure_memory_one_strategies:
+        opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
+
+        # simulating game
+        match = axl.Match(players=(s, opponent), turns=len(init_seq), game=donation)
+        _ = match.play()
+        history = match.result
+        opening_payoffs = match.scores()
+
+        # inferring co-player and best response
+        bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_mat)
+        # exclude the last payoff because it is included in exp_p
+        lt_payoffs = long_term_total_payoff(
+            opening_payoffs[:-1], exp_p, delta
+        )
+        total_payoff += lt_payoffs
+    return total_payoff
+
+# %%
+
+if __name__ == "__main__":
     payoff_matrix = calculate_payoff_matrix(benefit, cost, delta, epsilon)
-    for init_seq in initial_sequences:
 
-        s = axl.Cycler("".join(init_seq))
-        pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
-        total_payoff = 0
+    max_payoff = 0
+    max_seq = ""
 
-        for i in pure_memory_one_strategies:
-            opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
+    for seq_size in range(1, 10):
+        initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
 
-            # simulating game
-            match = axl.Match(players=(s, opponent), turns=len(init_seq), game=donation)
-            _ = match.play()
-            history = match.result
-            opening_payoffs = match.scores()
+        for init_seq in initial_sequences:
+            total_payoff = best_response_payoff(init_seq, payoff_matrix, benefit, cost, delta)
 
-            # inferring co-player and best response
-            bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_matrix)
-            # exclude the last payoff because it is included in exp_p
-            lt_payoffs = long_term_total_payoff(
-                opening_payoffs[:-1], exp_p, delta
-            )
-            total_payoff += lt_payoffs
+            print(f"{init_seq} {total_payoff}")
+            if total_payoff > max_payoff:
+                max_payoff = total_payoff
+                max_seq = init_seq
+            # f = open(f"{''.join(init_seq)}.txt", "w")
+            # f.write(f"{benefit}, {cost}, {delta}, {epsilon}, {total_payoff}")
+            # f.close()
+    print(f"max payoff: {max_payoff}, max seq: {max_seq}")
 
-        print(f"{init_seq} {total_payoff}")
-        f = open(f"{''.join(init_seq)}.txt", "w")
-        f.write(f"{benefit}, {cost}, {delta}, {epsilon}, {total_payoff}")
-        f.close()
 # %%
