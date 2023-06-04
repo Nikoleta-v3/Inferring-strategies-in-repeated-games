@@ -172,11 +172,11 @@ def long_term_total_payoff(opening_payoffs, exp_p, delta):
 
 if __name__ == "__main__":
 
-    values_c = np.linspace(0, 1, 20)
-    seq_sizes = range(1, 6)
-    delta = np.linspace(0.5, 1, 10)
+    values_c = np.linspace(0, 1, 11)
+    seq_sizes = range(1, 10)
+    deltas = np.linspace(0.5, 0.99, 12).round(2)
 
-    parameter_search = itertools.product(values_c, seq_sizes, delta)
+    parameter_search = itertools.product(values_c, seq_sizes, deltas)
     
     for c, size, d in parameter_search:
 
