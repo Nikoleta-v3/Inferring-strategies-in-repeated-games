@@ -12,8 +12,15 @@ class Action(Enum):
     C = 1,
     D = 0
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
 C = Action.C
 D = Action.D
+
 
 PARAMETERS = {
     "epsilon": 0.00,
@@ -184,32 +191,6 @@ def long_term_total_payoff(opening_payoffs, exp_p, delta):
         payoffs += turn_payoff[0] * delta ** turn
     # print(payoffs, exp_p)
     return payoffs + exp_p * delta ** len(opening_payoffs) / (1.0-delta)
-
-def make_history_between_memory1_strategies(strategy1, strategy2, initial_state, turns):
-    """play the game between two strategies for a given number of turns and return the history"""
-    # strategy1, strategy2 : (pcc, pcd, pdc, pdd)
-    # initial_state: (player1's inital move, player2's initial move), e.g. (C, D)
-    # turns: # of turns
-    history = [initial_state]
-    last = initial_state
-    for t in range(turns):
-        if last[0] == C and last[1] == C:
-            player1_move = C if strategy1[0] == 1 else D
-            player2_move = C if strategy2[0] == 1 else D
-        elif last[0] == C and last[1] == D:
-            player1_move = C if strategy1[1] == 1 else D
-            player2_move = C if strategy2[2] == 1 else D
-        elif last[0] == D and last[1] == C:
-            player1_move = C if strategy1[2] == 1 else D
-            player2_move = C if strategy2[1] == 1 else D
-        elif last[0] == D and last[1] == D:
-            player1_move = C if strategy1[3] == 1 else D
-            player2_move = C if strategy2[3] == 1 else D
-        else:
-            raise ValueError("Invalid history")
-        history.append((player1_move, player2_move))
-        last = (player1_move, player2_move)
-    return history
 
 # %%
 def make_history(player1_moves, player2_mem1_strategy):
