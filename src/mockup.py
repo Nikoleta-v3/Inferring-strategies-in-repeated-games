@@ -4,7 +4,6 @@ import itertools
 import numpy as np
 #%%
 from enum import Enum
-# from axelrod.action import Action
 
 import stationary
 
