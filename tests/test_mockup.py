@@ -12,9 +12,9 @@ sys.path.append(src_dir)
 import mockup as mcu
 import numpy as np
 
-from axelrod.action import Action
 
-C, D = Action.C, Action.D
+C = mcu.Action.C
+D = mcu.Action.D
 
 import unittest
 

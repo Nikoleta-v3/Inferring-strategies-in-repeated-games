@@ -1,14 +1,19 @@
 # %%
 import itertools
 
-import axelrod as axl
 import numpy as np
 #%%
-from axelrod.action import Action
+from enum import Enum
+# from axelrod.action import Action
 
 import stationary
 
-C, D = Action.C, Action.D
+class Action(Enum):
+    C = 1,
+    D = 0
+
+C = Action.C
+D = Action.D
 
 PARAMETERS = {
     "epsilon": 0.00,
@@ -23,7 +28,6 @@ epsilon = PARAMETERS["epsilon"]
 seq_size = PARAMETERS["seq_size"]
 benefit = PARAMETERS["benefit"]
 cost = PARAMETERS["cost"]
-action_map = {1: C, 0: D}
 
 # %%
 def idx_to_strategy(idx, print = False):
@@ -181,23 +185,88 @@ def long_term_total_payoff(opening_payoffs, exp_p, delta):
     # print(payoffs, exp_p)
     return payoffs + exp_p * delta ** len(opening_payoffs) / (1.0-delta)
 
+def make_history_between_memory1_strategies(strategy1, strategy2, initial_state, turns):
+    """play the game between two strategies for a given number of turns and return the history"""
+    # strategy1, strategy2 : (pcc, pcd, pdc, pdd)
+    # initial_state: (player1's inital move, player2's initial move), e.g. (C, D)
+    # turns: # of turns
+    history = [initial_state]
+    last = initial_state
+    for t in range(turns):
+        if last[0] == C and last[1] == C:
+            player1_move = C if strategy1[0] == 1 else D
+            player2_move = C if strategy2[0] == 1 else D
+        elif last[0] == C and last[1] == D:
+            player1_move = C if strategy1[1] == 1 else D
+            player2_move = C if strategy2[2] == 1 else D
+        elif last[0] == D and last[1] == C:
+            player1_move = C if strategy1[2] == 1 else D
+            player2_move = C if strategy2[1] == 1 else D
+        elif last[0] == D and last[1] == D:
+            player1_move = C if strategy1[3] == 1 else D
+            player2_move = C if strategy2[3] == 1 else D
+        else:
+            raise ValueError("Invalid history")
+        history.append((player1_move, player2_move))
+        last = (player1_move, player2_move)
+    return history
+
+# %%
+def make_history(player1_moves, player2_mem1_strategy):
+    """
+    play the game between two players for `len(player1_moves)` turns and return the history
+    player1_moves: list of moves of player1
+    player2_mem1_strategy: (init, pcc, pcd, pdc, pdd)  (tuple of Actions)
+    """
+    last = (player1_moves[0], player2_mem1_strategy[0])
+    history = []
+    history.append(last)
+    for i in range(1,len(player1_moves)):
+        m1 = player1_moves[i]
+        if last == (C,C):
+            m2 = player2_mem1_strategy[1]
+        elif last == (C,D):
+            # from player2's viewpoint, this is (D,C)
+            m2 = player2_mem1_strategy[3]
+        elif last == (D,C):
+            # from player2's viewpoint, this is (C,D)
+            m2 = player2_mem1_strategy[2]
+        elif last == (D,D):
+            m2 = player2_mem1_strategy[4]
+        else:
+            raise ValueError("Invalid history")
+        history.append((m1, m2))
+        last = (m1, m2)
+    return history
+
+def calc_payoff_from_history(history, benefit, cost):
+    """Calculate the payoff of the player from the history of the game"""
+    def state_to_payoff(s):
+        if s == (C,C):
+            return (benefit-cost, benefit-cost)
+        elif s == (C,D):
+            return (-cost, benefit)
+        elif s == (D,C):
+            return (benefit, -cost)
+        elif s == (D,D):
+            return (0, 0)
+        else:
+            raise ValueError("Invalid history")
+    return [state_to_payoff(s) for s in history]
+
+
 # %%
 def best_response_payoff(init_seq, payoff_mat, benefit, cost, delta):
     # define game with benefit and cost
-    donation = axl.game.Game(r=benefit - cost, s=-cost, t=benefit, p=0)
 
-    s = axl.Cycler("".join(init_seq))
-    pure_memory_one_strategies = itertools.product([0, 1], repeat=5)
+    pure_memory_one_strategies = itertools.product([D, C], repeat=5)
     total_payoff = 0
 
-    for i in pure_memory_one_strategies:
-        opponent = axl.MemoryOnePlayer(i[1:], initial=action_map[i[0]])
-
+    for s2 in pure_memory_one_strategies:
         # simulating game
-        match = axl.Match(players=(s, opponent), turns=len(init_seq), game=donation)
-        _ = match.play()
-        history = match.result
-        opening_payoffs = match.scores()
+        #print(init_seq, s2)
+        history = make_history(init_seq, s2)
+        opening_payoffs = calc_payoff_from_history(history, benefit, cost)
 
         # inferring co-player and best response
         bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_mat)
@@ -216,8 +285,8 @@ if __name__ == "__main__":
     max_payoff = 0
     max_seq = ""
 
-    for seq_size in range(1, 10):
-        initial_sequences = list(itertools.product(["C", "D"], repeat=seq_size))
+    for seq_size in range(1, 3):
+        initial_sequences = list(itertools.product([C, D], repeat=seq_size))
 
         for init_seq in initial_sequences:
             total_payoff = best_response_payoff(init_seq, payoff_matrix, benefit, cost, delta)
