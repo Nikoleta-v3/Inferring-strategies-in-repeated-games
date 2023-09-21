@@ -194,15 +194,14 @@ def long_term_total_payoff(opening_payoffs, exp_p, delta):
 # %%
 def make_history(player1_moves, player2_mem1_strategy):
     """
-    play the game between two players for `len(player1_moves)` turns and return the history
+    Plays the repeated game between a sequence player and a player with a memory-one strategy and returns the history. The repeated game is played for `len(player1_moves)` turns.
     player1_moves: list of moves of player1
     player2_mem1_strategy: (init, pcc, pcd, pdc, pdd)  (tuple of Actions)
     """
     last = (player1_moves[0], player2_mem1_strategy[0])
     history = []
     history.append(last)
-    for i in range(1,len(player1_moves)):
-        m1 = player1_moves[i]
+    for i,m1 in enumerate(player1_moves[1:]):
         if last == (C,C):
             m2 = player2_mem1_strategy[1]
         elif last == (C,D):
