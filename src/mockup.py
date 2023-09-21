@@ -218,17 +218,17 @@ def make_history(player1_moves, player2_mem1_strategy):
         last = (m1, m2)
     return history
 
-def calc_payoff_from_history(history, benefit, cost):
+def calc_payoff_from_history(history, R, S, T, P):
     """Calculate the payoff of the player from the history of the game"""
     def state_to_payoff(s):
         if s == (C,C):
-            return (benefit-cost, benefit-cost)
+            return (R, R)
         elif s == (C,D):
-            return (-cost, benefit)
+            return (S, T)
         elif s == (D,C):
-            return (benefit, -cost)
+            return (T, S)
         elif s == (D,D):
-            return (0, 0)
+            return (P, P)
         else:
             raise ValueError("Invalid history")
     return [state_to_payoff(s) for s in history]
@@ -245,7 +245,7 @@ def best_response_payoff(init_seq, payoff_mat, benefit, cost, delta):
         # simulating game
         #print(init_seq, s2)
         history = make_history(init_seq, s2)
-        opening_payoffs = calc_payoff_from_history(history, benefit, cost)
+        opening_payoffs = calc_payoff_from_history(history, benefit-cost, -cost, benefit, 0.0)
 
         # inferring co-player and best response
         bs, exp_p = infer_best_response_and_expected_payoffs(history, payoff_mat)
