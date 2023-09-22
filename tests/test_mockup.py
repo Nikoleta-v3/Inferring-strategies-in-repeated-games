@@ -12,9 +12,9 @@ sys.path.append(src_dir)
 import mockup as mcu
 import numpy as np
 
-from axelrod.action import Action
 
-C, D = Action.C, Action.D
+C = mcu.Action.C
+D = mcu.Action.D
 
 import unittest
 
@@ -138,6 +138,14 @@ class TestMockup(unittest.TestCase):
         self.assertEqual(bs, 0b00000)
         self.assertAlmostEqual(exp_p, 1.0)
 
+
+    def test_make_history(self):
+        s2 = (C,D,D,D,D)  # initial C & AllD
+        history = mcu.make_history([C,C,D], s2)
+        self.assertEqual(history, [(C,C),(C,D),(D,D)])
+
+        history2 = mcu.make_history([D,C,D,C], s2)
+        self.assertEqual(history2, [(D,C),(C,D),(D,D),(C,D)])
 
 
 if __name__ == '__main__':
