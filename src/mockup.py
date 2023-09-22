@@ -201,7 +201,7 @@ def make_history(player1_moves, player2_mem1_strategy):
     last = (player1_moves[0], player2_mem1_strategy[0])
     history = []
     history.append(last)
-    for i,m1 in enumerate(player1_moves[1:]):
+    for m1 in player1_moves[1:]:
         if last == (C,C):
             m2 = player2_mem1_strategy[1]
         elif last == (C,D):
